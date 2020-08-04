@@ -35,7 +35,7 @@ client.on("message", async (message) => {
   }
 
   const results = await listInstants(search, reactions.length);
-  if (!results) {
+  if (!results.length) {
     return message.channel.send("Não achei nada, não!");
   }
 
@@ -55,7 +55,7 @@ client.on("message", async (message) => {
   }
 
   const filter = (reaction: MessageReaction, user: ClientUser) =>
-    reactions.includes(reaction.emoji.name) && user.id === message.author.id;
+    reactions.includes(reaction.emoji.name) && !user.bot; // && user.id === message.author.id;
 
   try {
     while (true) {
@@ -71,6 +71,7 @@ client.on("message", async (message) => {
       }
     }
   } catch (_) {
+    embed.delete();
     // @TODO marcar o embed como morto
   }
 });
