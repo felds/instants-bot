@@ -57,19 +57,22 @@ client.on("message", async (message) => {
   const filter = (reaction: MessageReaction, user: ClientUser) =>
     reactions.includes(reaction.emoji.name) && user.id === message.author.id;
 
-  embed
-    .awaitReactions(filter, {
-      max: 1,
-      time: 300_000,
-    })
-    .then(async (collected) => {
-      const emoji = collected.first()?.emoji.name!;
-      const i = reactions.indexOf(emoji);
-
-      const connection = await voiceChannel.join();
-      connection.play(results[i].url).setVolumeLogarithmic(0.666);
-    })
-    .catch((err) => message.reply(`Deu ruim (${err})`));
+  try {
+    while (true) {
+      const collected = await embed.awaitReactions(filter, {
+        max: 1,
+        time: 300_000,
+      });
+      for (const r of collected.array()) {
+        const emoji = r.emoji.name!;
+        const i = reactions.indexOf(emoji);
+        const connection = await voiceChannel.join();
+        connection.play(results[i].url).setVolumeLogarithmic(0.666);
+      }
+    }
+  } catch (_) {
+    // @TODO marcar o embed como morto
+  }
 });
 
 client.login(config.token);
