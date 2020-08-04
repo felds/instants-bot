@@ -3,7 +3,10 @@ import * as cheerio from "cheerio";
 
 const BASE_URL = "https://www.myinstants.com";
 
-export async function listInstants(search?: string): Promise<Instant[]> {
+export async function listInstants(
+  search?: string,
+  maxResults: number = 5
+): Promise<Instant[]> {
   const url = search ? getSearchUrl(search) : getHomeUrl();
 
   const res = await fetch(url);
@@ -23,7 +26,7 @@ export async function listInstants(search?: string): Promise<Instant[]> {
         url,
       };
     })
-    .slice(0, 5)
+    .slice(0, maxResults)
     .get();
 
   return instants;

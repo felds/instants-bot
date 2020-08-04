@@ -1,6 +1,8 @@
-import Discord from "discord.js";
+import Discord, { MessageEmbed, MessageReaction, ClientUser } from "discord.js";
 import config from "./config";
 import { listInstants } from "./src/connector";
+
+const reactions = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣"];
 
 const client = new Discord.Client();
 
@@ -32,15 +34,42 @@ client.on("message", async (message) => {
     );
   }
 
-  const instant = (await listInstants(search))[0];
-  if (!instant) {
+  const results = await listInstants(search, reactions.length);
+  if (!results) {
     return message.channel.send("Não achei nada, não!");
   }
 
-  const connection = await voiceChannel.join();
-  connection.play(instant.url).setVolumeLogarithmic(0.5);
+  const desc = results
+    .map((result, i) => `${reactions[i]} ${result.title}`)
+    .join("\n");
 
-  return message.reply(`tocani: **${instant.title}**`);
+  const embed = await message.channel.send(
+    new MessageEmbed({
+      color: "#fcba03",
+      description: desc,
+      length: 20,
+    })
+  );
+  for (const r of reactions.slice(0, results.length)) {
+    embed.react(r);
+  }
+
+  const filter = (reaction: MessageReaction, user: ClientUser) =>
+    reactions.includes(reaction.emoji.name) && user.id === message.author.id;
+
+  embed
+    .awaitReactions(filter, {
+      max: 1,
+      time: 300_000,
+    })
+    .then(async (collected) => {
+      const emoji = collected.first()?.emoji.name!;
+      const i = reactions.indexOf(emoji);
+
+      const connection = await voiceChannel.join();
+      connection.play(results[i].url).setVolumeLogarithmic(0.666);
+    })
+    .catch((err) => message.reply(`Deu ruim (${err})`));
 });
 
 client.login(config.token);
