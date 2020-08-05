@@ -1,5 +1,6 @@
 import fetch from "node-fetch";
 import * as cheerio from "cheerio";
+import { Instant } from "./types";
 
 const BASE_URL = "https://www.myinstants.com";
 
