@@ -21,16 +21,46 @@ type Queue = {
 };
 
 const queues = new WeakMap<VoiceConnection, Queue>();
-console.log(queues);
 
 client.on("ready", () => {
   console.log(`Logged in as ${client.user?.tag}!`);
+  client.user?.setActivity({
+    name: "chama assim, ó",
+    type: "LISTENING",
+  });
 });
 
 client.on("message", async (message) => {
   if (message.author.bot) return;
 
-  if (message.content.trim().toLowerCase() === `olha a pedra`) {
+  if (
+    ["chama assim, ó", "chama assim ó"].includes(
+      message.content.trim().toLowerCase()
+    )
+  ) {
+    const desc = `
+      **Pra fazê as galera debochá legal:**
+      \`chama [busca]\` pra machucar o regueiro
+      \`faya\` pra parar de machucar o regueiro
+      \`comequie\` pra ver a lista de debochadas de maceió
+    `;
+    const embed = new Discord.MessageEmbed({
+      color: "#fcba03",
+      description: desc,
+    });
+    message.reply(embed);
+    return;
+  }
+
+  if (
+    [
+      "como eh que eh",
+      "como é que é",
+      "comequie",
+      "comequié",
+      "comequieh",
+    ].includes(message.content.trim().toLowerCase())
+  ) {
     displayQueue(message);
     return;
   }
