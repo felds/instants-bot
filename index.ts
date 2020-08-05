@@ -22,9 +22,10 @@ client.on("message", async (message) => {
     return message.reply(err.message);
   }
 
-  const results = await listInstants(search, reactions.length);
-  if (!results.length) {
-    return message.channel.send("Não achei nada, não!");
+  const searchTerms = message.content.slice(config.prefix.length).trim();
+  const results = await listInstants(searchTerms, reactions.length);
+  if (results.length < 1) {
+    return message.reply("nachei nada, não!");
   }
 
   const desc = results
