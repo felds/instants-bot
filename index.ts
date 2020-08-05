@@ -14,24 +14,12 @@ client.on("message", async (message) => {
   if (message.author.bot) return;
   if (!message.content.startsWith(config.prefix)) return;
 
-  const search = message.content.slice(config.prefix.length).trim();
-
-  const voiceChannel = message?.member?.voice.channel;
-
-  if (!voiceChannel)
-    return message.channel.send("Você precisa estar em um canal de voz.");
-
-  const permissions = voiceChannel.permissionsFor(
-    message.client.user as Discord.User
-  );
-  if (
-    !permissions ||
-    !permissions.has("CONNECT") ||
-    !permissions.has("SPEAK")
-  ) {
-    return message.channel.send(
-      "Eu preciso de permissões para conectar e falar no seu canal de voz."
-    );
+  // handle connections
+  let connection: VoiceConnection;
+  try {
+    connection = await connectToVoiceChannel(message);
+  } catch (err) {
+    return message.reply(err.message);
   }
 
   const results = await listInstants(search, reactions.length);
@@ -66,7 +54,6 @@ client.on("message", async (message) => {
       for (const r of collected.array()) {
         const emoji = r.emoji.name!;
         const i = reactions.indexOf(emoji);
-        const connection = await voiceChannel.join();
         connection.play(results[i].url).setVolumeLogarithmic(0.666);
       }
     }
@@ -77,3 +64,31 @@ client.on("message", async (message) => {
 });
 
 client.login(config.token);
+
+async function connectToVoiceChannel(
+  message: Message
+): Promise<VoiceConnection> {
+  const voiceChannel = message.member?.voice?.channel;
+
+  if (!voiceChannel) {
+    throw new Error(
+      "você tem que estar conectado em um canal de voz para me usar (ui)."
+    );
+  }
+
+  const permissions = voiceChannel.permissionsFor(
+    message.client.user as Discord.User
+  );
+
+  if (
+    !permissions ||
+    !permissions.has("CONNECT") ||
+    !permissions.has("SPEAK")
+  ) {
+    throw new Error(
+      "eu não tenho permissão pra conectar nesse canal de voz [sad bot noises]."
+    );
+  }
+
+  return voiceChannel.join();
+}
