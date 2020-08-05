@@ -4,6 +4,7 @@ import Discord, {
   MessageEmbed,
   MessageReaction,
   VoiceConnection,
+  StreamDispatcher,
 } from "discord.js";
 import config from "./config";
 import { listInstants } from "./src/connector";
@@ -16,6 +17,7 @@ const client = new Discord.Client();
 type Queue = {
   isPlaying: boolean;
   instants: Instant[];
+  dispatcher?: StreamDispatcher;
 };
 
 const queues = new WeakMap<VoiceConnection, Queue>();
@@ -27,6 +29,17 @@ client.on("ready", () => {
 
 client.on("message", async (message) => {
   if (message.author.bot) return;
+
+  if (message.content.trim().toLowerCase() === `olha a pedra`) {
+    displayQueue(message);
+    return;
+  }
+
+  if (["faia", "faya"].includes(message.content.trim().toLowerCase())) {
+    stop(message);
+    return;
+  }
+
   if (!message.content.startsWith(config.prefix)) return;
 
   // handle connections
@@ -118,6 +131,8 @@ function playQueue(connection: VoiceConnection) {
     queue.isPlaying = false;
     console.error(err);
   });
+
+  queue.dispatcher = dispatcher;
 }
 
 async function connectToVoiceChannel(
@@ -149,3 +164,31 @@ async function connectToVoiceChannel(
 }
 
 client.login(config.token);
+
+async function displayQueue(message: Message) {
+  const voiceChannel = await connectToVoiceChannel(message);
+
+  const queue = queues.get(voiceChannel);
+  if (!queue || !queue.instants.length) {
+    message.reply("tem nada tocani não");
+    return;
+  }
+
+  message.reply(
+    queue.instants.map((instant) => `\n ☞ ${instant.title}`).join("")
+  );
+}
+
+async function stop(message: Message) {
+  const voiceChannel = await connectToVoiceChannel(message);
+  const queue = queues.get(voiceChannel);
+  if (!queue || !queue.instants.length) {
+    message.reply("tem nada tocani não");
+    return;
+  }
+
+  message.reply("fogo na babilônia");
+  queue.dispatcher?.end();
+  queue.instants = [];
+  queue.isPlaying = false;
+}
