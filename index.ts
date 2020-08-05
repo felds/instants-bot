@@ -1,10 +1,25 @@
-import Discord, { MessageEmbed, MessageReaction, ClientUser } from "discord.js";
+import Discord, {
+  ClientUser,
+  Message,
+  MessageEmbed,
+  MessageReaction,
+  VoiceConnection,
+} from "discord.js";
 import config from "./config";
 import { listInstants } from "./src/connector";
+import { Instant } from "./src/types";
 
-const reactions = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣"];
+const reactionIcons = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣"];
 
 const client = new Discord.Client();
+
+type Queue = {
+  isPlaying: boolean;
+  instants: Instant[];
+};
+
+const queues = new WeakMap<VoiceConnection, Queue>();
+console.log(queues);
 
 client.on("ready", () => {
   console.log(`Logged in as ${client.user?.tag}!`);
@@ -23,28 +38,27 @@ client.on("message", async (message) => {
   }
 
   const searchTerms = message.content.slice(config.prefix.length).trim();
-  const results = await listInstants(searchTerms, reactions.length);
+  const results = await listInstants(searchTerms, reactionIcons.length);
   if (results.length < 1) {
     return message.reply("nachei nada, não!");
   }
 
   const desc = results
-    .map((result, i) => `${reactions[i]} ${result.title}`)
+    .map((result, i) => `${reactionIcons[i]} ${result.title}`)
     .join("\n");
 
   const embed = await message.channel.send(
     new MessageEmbed({
       color: "#fcba03",
       description: desc,
-      length: 20,
     })
   );
-  for (const r of reactions.slice(0, results.length)) {
+  for (const r of reactionIcons.slice(0, results.length)) {
     embed.react(r);
   }
 
   const filter = (reaction: MessageReaction, user: ClientUser) =>
-    reactions.includes(reaction.emoji.name) && !user.bot; // && user.id === message.author.id;
+    reactionIcons.includes(reaction.emoji.name) && !user.bot; // && user.id === message.author.id;
 
   try {
     while (true) {
@@ -54,17 +68,57 @@ client.on("message", async (message) => {
       });
       for (const r of collected.array()) {
         const emoji = r.emoji.name!;
-        const i = reactions.indexOf(emoji);
-        connection.play(results[i].url).setVolumeLogarithmic(0.666);
+        const i = reactionIcons.indexOf(emoji);
+        const instant = results[i];
+
+        enqueue(connection, instant);
+        playQueue(connection);
       }
     }
   } catch (_) {
     embed.delete();
-    // @TODO marcar o embed como morto
   }
 });
 
-client.login(config.token);
+function enqueue(connection: VoiceConnection, instant: Instant) {
+  const queue = queues.get(connection) || {
+    isPlaying: false,
+    instants: [],
+  };
+  queues.set(connection, queue);
+  queue.instants.push(instant);
+}
+
+function playQueue(connection: VoiceConnection) {
+  const queue = queues.get(connection);
+
+  if (!queue) {
+    return;
+  }
+
+  if (!queue.instants.length) {
+    queue.isPlaying = false;
+    return;
+  }
+
+  if (queue.isPlaying) {
+    return;
+  }
+
+  queue.isPlaying = true;
+  const instant = queue.instants[0];
+  const dispatcher = connection.play(instant.url);
+  dispatcher.setVolumeLogarithmic(0.666);
+  dispatcher.on("finish", () => {
+    queue.isPlaying = false;
+    queue.instants.shift();
+    playQueue(connection);
+  });
+  dispatcher.on("error", (err) => {
+    queue.isPlaying = false;
+    console.error(err);
+  });
+}
 
 async function connectToVoiceChannel(
   message: Message
@@ -93,3 +147,5 @@ async function connectToVoiceChannel(
 
   return voiceChannel.join();
 }
+
+client.login(config.token);
