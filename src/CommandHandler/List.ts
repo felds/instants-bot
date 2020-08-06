@@ -9,7 +9,6 @@ export default class List implements CommandHandler {
   ) {}
 
   public async accepts(): Promise<boolean> {
-    console.log({ args: this.args });
     return ["-l", "-ls", "-list"].includes(this.args[0]);
   }
 

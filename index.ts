@@ -38,6 +38,8 @@ client.on("message", async (message) => {
     // --------------------------
     new CommandHandler.Help(args, message),
     new CommandHandler.List(args, message, queue),
+    new CommandHandler.Skip(args, message, queue),
+    new CommandHandler.Stop(args, message, queue),
     new CommandHandler.Search(args, message, queue),
     // --------------------------
   ];
@@ -68,21 +70,6 @@ async function connectToVoiceChannel(
   }
 
   return voiceChannel.join();
-}
-
-async function displayQueue(message: Message) {
-  return; // @FIXME
-  // const voiceChannel = await connectToVoiceChannel(message);
-
-  // const queue = queues.get(voiceChannel);
-  // if (!queue || !queue.instants.length) {
-  //   message.reply("tem nada tocani não");
-  //   return;
-  // }
-
-  // message.reply(
-  //   queue.instants.map((instant) => `\n ☞ ${instant.title}`).join("")
-  // );
 }
 
 function getVoiceChannel(message: Message): VoiceChannel {
