@@ -9,7 +9,7 @@ export default class Stop implements CommandHandler {
   ) {}
 
   public async accepts(): Promise<boolean> {
-    return ["-skip", "-s", "-jump"].includes(this.args[0]);
+    return ["-stop", "-kill"].includes(this.args[0]);
   }
 
   public async handle(): Promise<void> {
