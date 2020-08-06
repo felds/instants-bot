@@ -1,10 +1,12 @@
 import { VoiceConnection } from "discord.js";
 
-export type Instant = {
-  title: string;
-  url: string;
-};
+declare global {
+  type Instant = {
+    title: string;
+    url: string;
+  };
 
-export type MyChannel = {
-  connection: VoiceConnection;
-};
+  type MyChannel = {
+    connection: VoiceConnection;
+  };
+}

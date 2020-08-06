@@ -8,7 +8,6 @@ import Discord, {
 } from "discord.js";
 import config from "./config";
 import { listInstants } from "./src/connector";
-import { Instant } from "./src/types";
 
 const reactionIcons = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣"];
 
