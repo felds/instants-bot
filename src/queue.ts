@@ -23,9 +23,13 @@ export default class Queue {
     }
   }
 
-  public stop() {
+  public skip() {
     this.currentDispatcher?.end();
+  }
+
+  public stop() {
     this.items.splice(0);
+    this.currentDispatcher?.end();
     this.isPlaying = false;
   }
 
