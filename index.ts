@@ -8,7 +8,7 @@ import Discord, {
 } from "discord.js";
 import config from "./config";
 import { listInstants } from "./src/connector";
-import Queue from "./src/queue";
+import Queue from "./src/Queue";
 
 const reactionIcons = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣"];
 
@@ -60,10 +60,10 @@ client.on("message", async (message) => {
     return;
   }
 
-  if (["faia", "faya"].includes(message.content.trim().toLowerCase())) {
-    stop(message);
-    return;
-  }
+  // if (["faia", "faya"].includes(message.content.trim().toLowerCase())) {
+  //   stop(message);
+  //   return;
+  // }
 
   if (!message.content.startsWith(config.prefix)) return;
 
@@ -155,21 +155,6 @@ async function displayQueue(message: Message) {
   // message.reply(
   //   queue.instants.map((instant) => `\n ☞ ${instant.title}`).join("")
   // );
-}
-
-async function stop(message: Message) {
-  return; // @FIXME
-  // const voiceChannel = await connectToVoiceChannel(message);
-  // const queue = queues.get(voiceChannel);
-  // if (!queue || !queue.instants.length) {
-  //   message.reply("tem nada tocani não");
-  //   return;
-  // }
-
-  // message.reply("fogo na babilônia");
-  // queue.dispatcher?.end();
-  // queue.instants = [];
-  // queue.isPlaying = false;
 }
 
 function getVoiceChannel(message: Message): VoiceChannel {
