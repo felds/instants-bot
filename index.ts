@@ -33,7 +33,6 @@ client.on("message", async (message) => {
   }
 
   const args = cleanContent.split(/\s+/).slice(1);
-  console.log({ args });
   const handlers: CommandHandler[] = [
     // --------------------------
     new CommandHandler.Help(args, message),
