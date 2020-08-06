@@ -21,7 +21,7 @@ const queues = new WeakMap<VoiceChannel, Queue>();
 client.on("ready", () => {
   console.log(`Logged in as ${client.user?.tag}!`);
   client.user?.setActivity({
-    name: "chama assim, ó",
+    name: "chama",
     type: "LISTENING",
   });
 });
@@ -32,10 +32,22 @@ client.on("message", async (message) => {
   const cleanContent = message.cleanContent.trim();
   if (!matchPrefix(cleanContent)) return;
 
-  const command = cleanContent.substr(config.prefix.length).trim();
+  // handle connections
+  let voiceChannel: VoiceChannel;
+  let queue: Queue;
+  try {
+    voiceChannel = getVoiceChannel(message);
+    queue = await getQueue(voiceChannel);
+  } catch (err) {
+    return message.reply(err.message);
+  }
+
+  const args = cleanContent.substr(config.prefix.length).trim().split(/\s+/);
+  console.log({ args });
   const handlers: CommandHandler[] = [
     // --------------------------
-    new CommandHandler.Help(command, message),
+    new CommandHandler.Help(args, message),
+    // new CommandHandler.Search(args, message, queue);
     // --------------------------
   ];
   for (const handler of handlers) {
@@ -46,55 +58,6 @@ client.on("message", async (message) => {
   }
 
   return;
-
-  if (
-    ["chama assim, ó", "chama assim ó"].includes(
-      message.content.trim().toLowerCase()
-    )
-  ) {
-    const desc = `
-      **Pra fazê as galera debochá legal:**
-      \`chama [busca]\` pra machucar o regueiro
-      \`faya\` pra parar de machucar o regueiro
-      \`comequie\` pra ver a lista de debochadas de maceió
-    `;
-    const embed = new Discord.MessageEmbed({
-      color: "#fcba03",
-      description: desc,
-    });
-    message.reply(embed);
-    return;
-  }
-
-  if (
-    [
-      "como eh que eh",
-      "como é que é",
-      "comequie",
-      "comequié",
-      "comequieh",
-    ].includes(message.content.trim().toLowerCase())
-  ) {
-    displayQueue(message);
-    return;
-  }
-
-  // if (["faia", "faya"].includes(message.content.trim().toLowerCase())) {
-  //   stop(message);
-  //   return;
-  // }
-
-  if (!message.content.startsWith(config.prefix)) return;
-
-  // handle connections
-  let voiceChannel: VoiceChannel;
-  let queue: Queue;
-  try {
-    voiceChannel = getVoiceChannel(message);
-    queue = await getQueue(voiceChannel);
-  } catch (err) {
-    return message.reply(err.message);
-  }
 
   //#region search
   const searchTerms = message.content.slice(config.prefix.length).trim();
