@@ -1,17 +1,7 @@
-import Discord, {
-  ClientUser,
-  Message,
-  MessageEmbed,
-  MessageReaction,
-  VoiceChannel,
-  VoiceConnection,
-} from "discord.js";
+import Discord, { Message, VoiceChannel, VoiceConnection } from "discord.js";
 import config from "./config";
 import CommandHandler from "./src/CommandHandler";
-import { listInstants } from "./src/connector";
 import Queue from "./src/Queue";
-
-const reactionIcons = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣"];
 
 const client = new Discord.Client();
 client.login(config.token);
@@ -42,65 +32,21 @@ client.on("message", async (message) => {
     return message.reply(err.message);
   }
 
-  const args = cleanContent.substr(config.prefix.length).trim().split(/\s+/);
+  const args = cleanContent.split(/\s+/).slice(1);
   console.log({ args });
   const handlers: CommandHandler[] = [
     // --------------------------
     new CommandHandler.Help(args, message),
-    // new CommandHandler.Search(args, message, queue);
+    new CommandHandler.List(args, message, queue),
+    new CommandHandler.Search(args, message, queue),
     // --------------------------
   ];
   for (const handler of handlers) {
-    if (handler.accepts()) {
-      handler.handle();
+    if (await handler.accepts()) {
+      await handler.handle();
       return;
     }
   }
-
-  return;
-
-  //#region search
-  const searchTerms = message.content.slice(config.prefix.length).trim();
-  const results = await listInstants(searchTerms, reactionIcons.length);
-  if (results.length < 1) {
-    return message.reply("nachei nada, não!");
-  }
-
-  const desc = results
-    .map((result, i) => `${reactionIcons[i]} ${result.title}`)
-    .join("\n");
-
-  //#endregion
-
-  //#region interacion
-  const embed = await message.channel.send(
-    new MessageEmbed({
-      color: "#fcba03",
-      description: desc,
-    })
-  );
-  for (const r of reactionIcons.slice(0, results.length)) {
-    embed.react(r);
-  }
-  const filter = (reaction: MessageReaction, user: ClientUser) =>
-    reactionIcons.includes(reaction.emoji.name) && !user.bot; // && user.id === message.author.id;
-  try {
-    while (true) {
-      const collected = await embed.awaitReactions(filter, {
-        max: 1,
-        time: 300_000,
-      });
-      for (const r of collected.array()) {
-        const emoji = r.emoji.name!;
-        const i = reactionIcons.indexOf(emoji);
-        const instant = results[i];
-        queue.play(instant);
-      }
-    }
-  } catch (_) {
-    embed.delete();
-  }
-  //#endregion
 });
 
 async function connectToVoiceChannel(

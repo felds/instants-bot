@@ -10,11 +10,11 @@ declare global {
     /**
      * Checks whether or not the object can handle the command.
      */
-    public accepts(): boolean;
+    public accepts(): Promise<boolean>;
 
     /**
      * Process the command.
      */
-    public handle(): void;
+    public handle(): Promise<void>;
   }
 }
