@@ -7,6 +7,7 @@ import Discord, {
   VoiceConnection,
 } from "discord.js";
 import config from "./config";
+import CommandHandler from "./src/CommandHandler";
 import { listInstants } from "./src/connector";
 import Queue from "./src/Queue";
 
@@ -27,6 +28,24 @@ client.on("ready", () => {
 
 client.on("message", async (message) => {
   if (message.author.bot) return;
+
+  const cleanContent = message.cleanContent.trim();
+  if (!matchPrefix(cleanContent)) return;
+
+  const command = cleanContent.substr(config.prefix.length).trim();
+  const handlers: CommandHandler[] = [
+    // --------------------------
+    new CommandHandler.Help(command, message),
+    // --------------------------
+  ];
+  for (const handler of handlers) {
+    if (handler.accepts()) {
+      handler.handle();
+      return;
+    }
+  }
+
+  return;
 
   if (
     ["chama assim, ó", "chama assim ó"].includes(
@@ -179,4 +198,12 @@ async function getQueue(voiceChannel: VoiceChannel): Promise<Queue> {
   queues.set(voiceChannel, newQueue);
 
   return newQueue;
+}
+
+function matchPrefix(content: string): boolean {
+  const lowerContent = content.toLowerCase();
+  return (
+    lowerContent.startsWith(config.prefix + " ") ||
+    lowerContent === config.prefix
+  );
 }
