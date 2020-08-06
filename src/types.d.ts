@@ -5,8 +5,4 @@ declare global {
     title: string;
     url: string;
   };
-
-  type MyChannel = {
-    connection: VoiceConnection;
-  };
 }

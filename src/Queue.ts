@@ -1,11 +1,11 @@
-import { VoiceConnection } from "discord.js";
+import { VoiceConnection, StreamDispatcher } from "discord.js";
 
 export default class Queue {
-  protected _isPlaying: boolean = false;
+  protected isPlaying: boolean = false;
+  protected connection: VoiceConnection;
+  protected currentDispatcher?: StreamDispatcher;
 
   readonly items: Instant[] = [];
-
-  private connection: VoiceConnection;
 
   constructor(connection: VoiceConnection) {
     this.connection = connection;
@@ -15,22 +15,35 @@ export default class Queue {
     this.items.push(item);
 
     if (!this.isPlaying) {
-      this._isPlaying = true;
+      this.isPlaying = true;
       while (this.items.length) {
-        const next = this.items[0];
-        await this.playItem();
+        await this.playNext();
       }
-      this._isPlaying = false;
+      this.isPlaying = false;
     }
   }
 
-  protected async playItem(): Promise<void> {
+  public skip() {
+    this.currentDispatcher?.end();
+  }
+
+  public stop() {
+    this.items.splice(0);
+    this.currentDispatcher?.end();
+    this.isPlaying = false;
+  }
+
+  /**
+   * Plays the next item and removes it from the queue.
+   * Cleans the queue in case of error.
+   */
+  protected async playNext(): Promise<void> {
     const next = this.items[0];
     if (!next) return;
 
     return new Promise((resolve, reject) => {
       const dispatcher = this.connection.play(next.url);
-      dispatcher.setVolume(0.666);
+      dispatcher.setVolumeLogarithmic(0.666);
       dispatcher.on("finish", () => {
         this.items.shift(); // remove from the queue after playing
         resolve();
@@ -39,10 +52,7 @@ export default class Queue {
         this.items.splice(0); // clear the queue in case of error
         reject();
       });
+      this.currentDispatcher = dispatcher;
     });
-  }
-
-  get isPlaying() {
-    return this._isPlaying;
   }
 }
