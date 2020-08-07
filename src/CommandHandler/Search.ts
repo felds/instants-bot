@@ -1,6 +1,7 @@
-import { Message, MessageEmbed, MessageReaction, ClientUser } from "discord.js";
-import Queue from "../Queue";
+import { ClientUser, Message, MessageReaction } from "discord.js";
 import { listInstants } from "../connector";
+import MyEmbed from "../MyEmbed";
+import Queue from "../Queue";
 
 const reactionIcons = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣"];
 
@@ -28,8 +29,7 @@ export default class Search implements CommandHandler {
       .join("\n");
 
     const embed = await this.message.channel.send(
-      new MessageEmbed({
-        color: "#fcba03",
+      new MyEmbed({
         description: desc,
       })
     );
