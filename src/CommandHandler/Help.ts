@@ -13,7 +13,7 @@ export default class Help implements CommandHandler {
     const description = `
       **Chama assim, ó:**
       \`${config.prefix} -h|-?|-help\`        Ajuda
-      \`${config.prefix} -l|--l|list\`        Lista
+      \`${config.prefix} -l|-ls|list\`        Lista
       \`${config.prefix} -s|-j|-skip|-jump\`  Próximo
       \`${config.prefix} -k|-kill|-stop\`:    Limpa a lista
       \`${config.prefix} <busca>\`            Busca
