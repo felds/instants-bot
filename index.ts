@@ -11,7 +11,7 @@ const queues = new WeakMap<VoiceChannel, Queue>();
 client.on("ready", () => {
   console.log(`Logged in as ${client.user?.tag}!`);
   client.user?.setActivity({
-    name: `${config.prefix} -?`,
+    name: `${config.prefix} -help`,
     type: "LISTENING",
   });
 });
