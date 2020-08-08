@@ -12,11 +12,11 @@ export default class Help implements CommandHandler {
   public async handle(): Promise<void> {
     const description = `
       **Chama assim, ó:**
-      \`${config.prefix} -h|-?|-help\`        Ajuda
-      \`${config.prefix} -l|-ls|list\`        Lista
-      \`${config.prefix} -s|-j|-skip|-jump\`  Próximo
+      \`${config.prefix} -h|-?|-help\`:       Ajuda
+      \`${config.prefix} -l|-ls|-list\`:      Lista
+      \`${config.prefix} -s|-j|-skip|-jump\`: Próximo
       \`${config.prefix} -k|-kill|-stop\`:    Limpa a lista
-      \`${config.prefix} <busca>\`            Busca
+      \`${config.prefix} <busca>\`:           Busca
       `;
 
     const embed = new MyEmbed({
