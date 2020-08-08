@@ -84,11 +84,12 @@ function getVoiceChannel(message: Message): VoiceChannel {
 }
 
 async function getQueue(voiceChannel: VoiceChannel): Promise<Queue> {
+  const voiceConnection = await connectToVoiceChannel(voiceChannel);
+
   if (queues.has(voiceChannel)) {
     return queues.get(voiceChannel)!;
   }
 
-  const voiceConnection = await connectToVoiceChannel(voiceChannel);
   const newQueue = new Queue(voiceConnection);
   queues.set(voiceChannel, newQueue);
 
