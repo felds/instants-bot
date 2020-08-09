@@ -30,6 +30,8 @@ client.on(
     const member = newState.member;
     if (!member || member.user.bot) return;
 
+    if (oldState.channelID === newState.channelID) return; // user is not joinin a new server
+
     const queue = await getQueue(voiceChannel);
 
     if (member.id === "517135926334324747") {
