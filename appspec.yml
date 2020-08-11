@@ -1,0 +1,27 @@
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /home/ubuntu/bot
+
+permissions:
+  - object: /
+    pattern: '**'
+    owner: ubuntu
+    group: ubuntu
+
+hooks:
+  BeforeInstall:
+    - location: scripts/remove_old.sh
+      timeout: 60
+      runas: root
+
+  AfterInstall:
+    - location: scripts/install_dependencies.sh
+      timeout: 120
+      runas: ubuntu
+
+  ApplicationStart:
+    - location: scripts/start_bot.sh
+      timeout: 30
+      runas: ubuntu
