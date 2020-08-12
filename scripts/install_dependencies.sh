@@ -1,4 +1,4 @@
 #!/bin/bash
 cd /home/ubuntu/bot
-pm2 stop ecosystem.config.js --silent
+/home/ubuntu/.npm-global/bin/pm2 stop ecosystem.config.js --silent
 npm install
