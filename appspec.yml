@@ -22,6 +22,6 @@ hooks:
       runas: ubuntu
 
   ApplicationStart:
-    - location: scripts/start_bot.sh
+    - location: scripts/build_and_start.sh
       timeout: 30
       runas: ubuntu
