@@ -91,7 +91,7 @@ client.on("message", async (message) => {
   }
 
   const args = cleanContent.split(/\s+/).slice(1);
-  const handlers: CommandHandler[] = [
+  const handlers: ICommandHandler[] = [
     // --------------------------
     new CommandHandler.Help(args, message),
     new CommandHandler.List(args, message, queue),

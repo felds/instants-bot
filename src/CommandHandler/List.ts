@@ -2,7 +2,7 @@ import { Message } from "discord.js";
 import Queue from "../Queue";
 import MyEmbed from "../MyEmbed";
 
-export default class List implements CommandHandler {
+export default class List implements ICommandHandler {
   static readonly MAX_ROWS = 10;
 
   constructor(

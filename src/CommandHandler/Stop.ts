@@ -2,7 +2,7 @@ import { Message } from "discord.js";
 import Queue from "../Queue";
 import MyEmbed from "../MyEmbed";
 
-export default class Stop implements CommandHandler {
+export default class Stop implements ICommandHandler {
   constructor(
     private args: string[],
     private message: Message,

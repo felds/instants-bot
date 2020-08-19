@@ -2,7 +2,7 @@ import { Message } from "discord.js";
 import config from "../../config";
 import MyEmbed from "../MyEmbed";
 
-export default class Help implements CommandHandler {
+export default class Help implements ICommandHandler {
   constructor(private args: string[], private message: Message) {}
 
   public async accepts(): Promise<boolean> {

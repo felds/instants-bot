@@ -1,7 +1,7 @@
 import { Message } from "discord.js";
 import Queue from "../Queue";
 
-export default class Skip implements CommandHandler {
+export default class Skip implements ICommandHandler {
   constructor(
     private args: string[],
     private message: Message,
