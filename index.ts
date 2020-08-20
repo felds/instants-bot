@@ -161,3 +161,21 @@ function matchPrefix(content: string): boolean {
     lowerContent === config.prefix
   );
 }
+
+const CHECK_INTERVAL = 5_000;
+
+/**
+ * Disconnects from a channel when it becomes empty.
+ */
+function disconnectWhenEmpty() {
+  const conns = client.voice?.connections;
+  if (!conns) return;
+
+  for (const [id, conn] of conns) {
+    const allBots = conn.channel.members.every((m) => m.user.bot);
+    if (allBots) {
+      conn.disconnect();
+    }
+  }
+}
+client.setInterval(disconnectWhenEmpty, CHECK_INTERVAL);
