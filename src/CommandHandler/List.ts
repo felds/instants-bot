@@ -1,6 +1,6 @@
 import { Message } from "discord.js";
 import Queue from "../queue";
-import MyEmbed from "../MyEmbed";
+import { Embed } from "../message";
 
 export default class List implements ICommandHandler {
   static readonly MAX_ROWS = 10;
@@ -33,6 +33,6 @@ export default class List implements ICommandHandler {
       description = "Tem nada aqui não";
     }
 
-    this.message.channel.send(new MyEmbed({ description }));
+    this.message.channel.send(new Embed({ description }));
   }
 }

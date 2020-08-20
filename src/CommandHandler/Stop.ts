@@ -1,6 +1,6 @@
 import { Message } from "discord.js";
 import Queue from "../queue";
-import MyEmbed from "../MyEmbed";
+import { Embed } from "../message";
 
 export default class Stop implements ICommandHandler {
   constructor(
@@ -16,7 +16,7 @@ export default class Stop implements ICommandHandler {
   public async handle(): Promise<void> {
     this.queue.stop();
     this.message.channel.send(
-      new MyEmbed({ description: "🔥 *Fogo na babilônia* 🔥" })
+      new Embed({ description: "🔥 *Fogo na babilônia* 🔥" })
     );
   }
 }

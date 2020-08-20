@@ -1,6 +1,6 @@
 import { Message } from "discord.js";
 import config from "../config";
-import MyEmbed from "../MyEmbed";
+import { Embed } from "../message";
 
 export default class Help implements ICommandHandler {
   constructor(private args: string[], private message: Message) {}
@@ -19,7 +19,7 @@ export default class Help implements ICommandHandler {
       \`${config.prefix} <busca>\`:           Busca
       `;
 
-    const embed = new MyEmbed({
+    const embed = new Embed({
       description,
     });
 
