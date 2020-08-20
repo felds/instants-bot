@@ -4,8 +4,8 @@ import Discord, {
   VoiceConnection,
   VoiceState,
 } from "discord.js";
-import config from "./config";
 import CommandHandler from "./src/CommandHandler";
+import config from "./src/config";
 import Queue from "./src/Queue";
 
 const client = new Discord.Client();

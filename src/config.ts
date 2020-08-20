@@ -1,4 +1,4 @@
 export default {
-  prefix: process.env.PREFIX,
+  prefix: process.env.COMMAND_PREFIX,
   token: process.env.TOKEN,
 };

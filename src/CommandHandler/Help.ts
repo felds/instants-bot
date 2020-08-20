@@ -1,5 +1,5 @@
 import { Message } from "discord.js";
-import config from "../../config";
+import config from "../config";
 import MyEmbed from "../MyEmbed";
 
 export default class Help implements ICommandHandler {
