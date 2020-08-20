@@ -1,4 +1,5 @@
-import { VoiceConnection, StreamDispatcher } from "discord.js";
+import { VoiceConnection, StreamDispatcher, VoiceChannel } from "discord.js";
+import { connectToVoiceChannel } from "./discord";
 
 export default class Queue {
   protected isPlaying: boolean = false;
@@ -55,4 +56,19 @@ export default class Queue {
       this.currentDispatcher = dispatcher;
     });
   }
+}
+
+export const queues = new WeakMap<VoiceChannel, Queue>();
+
+export async function getQueue(voiceChannel: VoiceChannel): Promise<Queue> {
+  const voiceConnection = await connectToVoiceChannel(voiceChannel);
+
+  if (queues.has(voiceChannel)) {
+    return queues.get(voiceChannel)!;
+  }
+
+  const newQueue = new Queue(voiceConnection);
+  queues.set(voiceChannel, newQueue);
+
+  return newQueue;
 }
