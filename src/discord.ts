@@ -1,8 +1,6 @@
-import { Client, VoiceChannel, VoiceConnection } from "discord.js";
-import config from "./config";
+import { Client, Message, VoiceChannel, VoiceConnection } from "discord.js";
 
 export const client = new Client();
-client.login(config.token);
 
 export async function connectToVoiceChannel(
   voiceChannel: VoiceChannel
@@ -23,4 +21,16 @@ export async function connectToVoiceChannel(
   }
 
   return voiceChannel.join();
+}
+
+export function getVoiceChannel(message: Message): VoiceChannel {
+  const voiceChannel = message.member?.voice.channel;
+
+  if (!voiceChannel) {
+    throw new Error(
+      "você tem que estar conectado em um canal de voz para me usar (ui)."
+    );
+  }
+
+  return voiceChannel;
 }
