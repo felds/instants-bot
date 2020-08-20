@@ -1,5 +1,5 @@
 import { Message } from "discord.js";
-import Queue from "../Queue";
+import Queue from "../queue";
 import MyEmbed from "../MyEmbed";
 
 export default class Stop implements ICommandHandler {

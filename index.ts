@@ -6,7 +6,7 @@ import Discord, {
 } from "discord.js";
 import CommandHandler from "./src/CommandHandler";
 import config from "./src/config";
-import Queue from "./src/Queue";
+import Queue from "./src/queue";
 
 const client = new Discord.Client();
 client.login(config.token);

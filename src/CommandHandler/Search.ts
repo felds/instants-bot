@@ -1,7 +1,7 @@
 import { ClientUser, Message, MessageReaction } from "discord.js";
 import { listInstants } from "../connector";
 import MyEmbed from "../MyEmbed";
-import Queue from "../Queue";
+import Queue from "../queue";
 
 const reactionIcons = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣"];
 
