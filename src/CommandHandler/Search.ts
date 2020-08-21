@@ -3,28 +3,7 @@ import { listInstants } from "../connector";
 import { Embed } from "../message";
 import Queue from "../queue";
 
-const reactionIcons = [
-  "1️⃣",
-  "2️⃣",
-  "3️⃣",
-  "4️⃣",
-  "5️⃣",
-  "6️⃣",
-  "7️⃣",
-  "8️⃣",
-  "9️⃣",
-  "🐙",
-  "🐃",
-  "🍁",
-  "🇨🇬",
-  "🍀",
-  "🦀",
-  "🐽",
-  "🌕",
-  "🍆",
-  "🎱",
-  "🇸🇨",
-];
+const reactionIcons = "1️⃣,2️⃣,3️⃣,4️⃣,5️⃣,6️⃣,7️⃣,8️⃣,9️⃣".split(",");
 
 export default class Search implements ICommandHandler {
   constructor(
