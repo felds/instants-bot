@@ -37,17 +37,21 @@ client.on(
   "voiceStateUpdate",
   async (oldState: VoiceState, newState: VoiceState) => {
     const voiceChannel = newState.channel;
-    if (!voiceChannel) return;
+    if (!voiceChannel) return; // not entering a voice channel
 
     const member = newState.member;
-    if (!member || member.user.bot) return;
+    if (!member || member.user.bot) return; // user is a bot
 
     // user is not joinin a new server
-    if (oldState.channelID === newState.channelID) return;
+    if (oldState.channelID === newState.channelID) return; // not changing voice channels
 
     if (doorbells[member.id]) {
-      const queue = await getQueue(voiceChannel);
-      queue.play(doorbells[member.id]);
+      try {
+        const queue = await getQueue(voiceChannel);
+        queue.play(doorbells[member.id]);
+      } catch (err) {
+        console.error("Error while ringing doorbell", err);
+      }
     }
   }
 );
