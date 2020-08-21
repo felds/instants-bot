@@ -20,7 +20,32 @@ export async function connectToVoiceChannel(
     );
   }
 
-  return voiceChannel.join();
+  const connection = await voiceChannel.join();
+  connection.on("authenticated", () =>
+    console.log("Voice Channel authenticated")
+  );
+  connection.on("closing", () => console.log("Voice connection closing"));
+  connection.on("debug", (msg) => console.log("Voice connection debug", msg));
+  connection.on("disconnect", (err) =>
+    console.log("Voice connection disconnected", err)
+  );
+  connection.on("error", (err) => console.log("Voice connection error", err));
+  connection.on("failed", (err) => console.log("Voice connection failed", err));
+  connection.on("newSession", () =>
+    console.log("Voice connection new session")
+  );
+  connection.on("ready", () => console.log("Voice connection ready"));
+  connection.on("reconnecting", () =>
+    console.log("Voice connection reconnecting")
+  );
+  connection.on("speaking", (user, speaking) =>
+    console.log("Voice connection speaking", user, speaking)
+  );
+  connection.on("warn", (warning) =>
+    console.warn("Voice channel warning", warning)
+  );
+
+  return connection;
 }
 
 export function getVoiceChannel(message: Message): VoiceChannel {
