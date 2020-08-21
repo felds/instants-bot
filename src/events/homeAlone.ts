@@ -3,7 +3,7 @@
  */
 
 import { VoiceState } from "discord.js";
-import { client, connectToVoiceChannel } from "../discord";
+import { client } from "../discord";
 
 client.on("voiceStateUpdate", (oldState: VoiceState, newState: VoiceState) => {
   const voiceChannel = oldState.channel;
