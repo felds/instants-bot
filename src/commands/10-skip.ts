@@ -1,10 +1,10 @@
-import Queue from "../queue";
 import { Message } from "discord.js";
+import Queue from "../queue";
 
 export const command: Command = {
-  aliases: ["-skip", "-s", "-jump", "-j"],
-  description: "Pula uma pedrada",
-  async process(message: Message, queue: Queue, ...args: string[]) {
+  aliases: ["-j", "-s", "-jump", "-skip"],
+  description: "Pula a pedrada",
+  process(message: Message, queue: Queue) {
     queue.skip();
   },
 };
