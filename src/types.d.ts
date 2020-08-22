@@ -3,14 +3,8 @@ type Instant = {
   url: string;
 };
 
-interface ICommandHandler {
-  /**
-   * Checks whether or not the object can handle the command.
-   */
-  public accepts(): Promise<boolean>;
-
-  /**
-   * Process the command.
-   */
-  public handle(): Promise<void>;
-}
+type Command = {
+  aliases: string[];
+  description: string;
+  process: (message: Message, queue: Queue, ...args: string[]) => void;
+};

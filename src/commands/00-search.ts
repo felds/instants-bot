@@ -5,22 +5,15 @@ import Queue from "../queue";
 
 const reactionIcons = "1️⃣,2️⃣,3️⃣,4️⃣,5️⃣,6️⃣,7️⃣,8️⃣,9️⃣".split(",");
 
-export default class Search implements ICommandHandler {
-  constructor(
-    private args: string[],
-    private message: Message,
-    private queue: Queue
-  ) {}
-
-  public async accepts(): Promise<boolean> {
-    return true;
-  }
-
-  public async handle(): Promise<void> {
-    const searchTerms = this.args.join(" ");
+export const command: Command = {
+  aliases: [],
+  description: "Busca as parada",
+  async process(message: Message, queue: Queue, ...args: string[]) {
+    const searchTerms = args.join(" ");
     const results = await listInstants(searchTerms, reactionIcons.length);
+
     if (results.length < 1) {
-      this.message.reply("nachei nada, não!");
+      message.reply("Nachei nada, não!");
       return;
     }
 
@@ -28,7 +21,7 @@ export default class Search implements ICommandHandler {
       .map((result, i) => `${reactionIcons[i]} ${result.title}`)
       .join("\n");
 
-    const embed = await this.message.channel.send(
+    const embed = await message.channel.send(
       new Embed({
         description: desc,
       })
@@ -48,11 +41,11 @@ export default class Search implements ICommandHandler {
           const emoji = r.emoji.name!;
           const i = reactionIcons.indexOf(emoji);
           const instant = results[i];
-          this.queue.play(instant);
+          queue.play(instant);
         }
       }
     } catch (_) {
       embed.delete();
     }
-  }
-}
+  },
+};
