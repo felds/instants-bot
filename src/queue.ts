@@ -1,16 +1,18 @@
-import { VoiceConnection, StreamDispatcher, VoiceChannel } from "discord.js";
+import {
+  VoiceConnection,
+  StreamDispatcher,
+  VoiceChannel,
+  Snowflake,
+} from "discord.js";
 import { connectToVoiceChannel } from "./discord";
 
 export default class Queue {
-  protected isPlaying: boolean = false;
-  protected connection: VoiceConnection;
-  protected currentDispatcher?: StreamDispatcher;
+  private isPlaying: boolean = false;
+  private currentDispatcher?: StreamDispatcher;
 
   readonly items: Instant[] = [];
 
-  constructor(connection: VoiceConnection) {
-    this.connection = connection;
-  }
+  constructor(private voiceChannelId: Snowflake) {}
 
   public async play(item: Instant) {
     this.items.push(item);
@@ -42,8 +44,9 @@ export default class Queue {
     const next = this.items[0];
     if (!next) return;
 
-    return new Promise((resolve, reject) => {
-      const dispatcher = this.connection.play(next.url);
+    return new Promise(async (resolve, reject) => {
+      const connection = await connectToVoiceChannel(this.voiceChannelId);
+      const dispatcher = connection.play(next.url);
       dispatcher.setVolumeLogarithmic(0.666);
       dispatcher.on("finish", () => {
         this.items.shift(); // remove from the queue after playing
@@ -58,17 +61,15 @@ export default class Queue {
   }
 }
 
-export const queues = new WeakMap<VoiceChannel, Queue>();
+export const queues = new Map<Snowflake, Queue>();
 
 export async function getQueue(voiceChannel: VoiceChannel): Promise<Queue> {
-  const voiceConnection = await connectToVoiceChannel(voiceChannel);
-
-  if (queues.has(voiceChannel)) {
-    return queues.get(voiceChannel)!;
+  if (queues.has(voiceChannel.id)) {
+    return queues.get(voiceChannel.id)!;
   }
 
-  const newQueue = new Queue(voiceConnection);
-  queues.set(voiceChannel, newQueue);
+  const newQueue = new Queue(voiceChannel.id);
+  queues.set(voiceChannel.id, newQueue);
 
   return newQueue;
 }
