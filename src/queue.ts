@@ -45,18 +45,22 @@ export default class Queue {
     if (!next) return;
 
     return new Promise(async (resolve, reject) => {
-      const connection = await connectToVoiceChannel(this.voiceChannelId);
-      const dispatcher = connection.play(next.url);
-      dispatcher.setVolumeLogarithmic(0.666);
-      dispatcher.on("finish", () => {
-        this.items.shift(); // remove from the queue after playing
+      try {
+        const connection = await connectToVoiceChannel(this.voiceChannelId);
+        const dispatcher = connection.play(next.url);
+        dispatcher.setVolumeLogarithmic(0.666);
+        dispatcher.on("finish", () => {
+          this.items.shift(); // remove from the queue after playing
+          resolve();
+        });
+        dispatcher.on("error", () => {
+          this.items.splice(0); // clear the queue in case of error
+          reject();
+        });
+        this.currentDispatcher = dispatcher;
+      } catch (err) {
         resolve();
-      });
-      dispatcher.on("error", () => {
-        this.items.splice(0); // clear the queue in case of error
-        reject();
-      });
-      this.currentDispatcher = dispatcher;
+      }
     });
   }
 }

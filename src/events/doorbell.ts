@@ -51,7 +51,7 @@ client.on(
         const queue = await getQueue(voiceChannel);
         queue.play(doorbells[member.id]);
       } catch (err) {
-        console.error("Error while ringing doorbell", err);
+        /* noop */
       }
     }
   }
