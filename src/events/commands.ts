@@ -28,7 +28,7 @@ client.on("message", async (message) => {
   const args = cleanContent.split(/\s+/).slice(1);
   for (const command of await commands) {
     if (command.aliases.length && !command.aliases.includes(args[0])) continue;
-    return command.process(message, queue, ...args.slice(1));
+    return command.process(message, queue, ...args);
   }
 });
 
