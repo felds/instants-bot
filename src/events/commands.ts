@@ -1,5 +1,5 @@
 import { VoiceChannel } from "discord.js";
-import CommandHandler from "../CommandHandler";
+import CommandHandler from "../commands";
 import config from "../config";
 import { client, getVoiceChannel } from "../discord";
 import Queue, { getQueue } from "../queue";
