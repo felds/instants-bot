@@ -1,18 +1,12 @@
 import { client } from "../discord";
 import config from "../config";
+import { logger } from "../logging";
 
 client.on("ready", () => {
-  console.log(`
----------------------
-
-  Estou pronto!
-  Estou pronto!
-    -- Bob Esponja
-
----------------------
-
-- Logged in as ${client.user?.tag}
-`);
+  logger.info(
+    { user: client.user?.tag },
+    "Logged in. Ready to debochar legal."
+  );
 
   client.user?.setActivity({
     name: `${config.prefix} -help`,
