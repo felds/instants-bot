@@ -1,3 +1,5 @@
+/// <reference path="./src/types.d.ts" />
+
 import { join } from "path";
 import config from "./src/config";
 import { client } from "./src/discord";
