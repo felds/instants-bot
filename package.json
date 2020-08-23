@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon --exec \"ts-node --files\" index.ts"
+    "start": "nodemon index.ts | bunyan"
   },
   "keywords": [],
   "author": "",
