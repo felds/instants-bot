@@ -1,10 +1,12 @@
 import { VoiceChannel } from "discord.js";
+import { join } from "path";
 import config from "../config";
 import { client, getVoiceChannel } from "../discord";
 import Queue, { getQueue } from "../queue";
 import { importDir } from "../util";
-import { join } from "path";
+import { logger } from "../logging";
 
+// import individual commands
 const commands: Promise<Command[]> = importDir<{ command: Command }>(
   join(__dirname, "../commands")
 ).then((modules) => modules.map((module) => module.command));
@@ -22,6 +24,7 @@ client.on("message", async (message) => {
     voiceChannel = getVoiceChannel(message);
     queue = await getQueue(voiceChannel);
   } catch (err) {
+    logger.error({ err }, "Error while connecting to the voice channel.");
     return message.reply(err.message);
   }
 
