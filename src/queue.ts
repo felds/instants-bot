@@ -1,10 +1,6 @@
-import {
-  VoiceConnection,
-  StreamDispatcher,
-  VoiceChannel,
-  Snowflake,
-} from "discord.js";
+import { Snowflake, StreamDispatcher, VoiceChannel } from "discord.js";
 import { connectToVoiceChannel } from "./discord";
+import { logger } from "./logging";
 
 export default class Queue {
   private isPlaying: boolean = false;
@@ -69,9 +65,14 @@ export const queues = new Map<Snowflake, Queue>();
 
 export async function getQueue(voiceChannel: VoiceChannel): Promise<Queue> {
   if (queues.has(voiceChannel.id)) {
+    logger.info({ voiceChannel }, "Queue for voice channel found.");
     return queues.get(voiceChannel.id)!;
   }
 
+  logger.info(
+    { voiceChannel },
+    "Queue for voice channel not found. Creating a new one.",
+  );
   const newQueue = new Queue(voiceChannel.id);
   queues.set(voiceChannel.id, newQueue);
 
