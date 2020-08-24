@@ -6,7 +6,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon index.ts | bunyan"
+    "start": "nodemon index.ts | bunyan",
+    "minimal": "nodemon mininal.ts | bunyan"
   },
   "keywords": [],
   "author": "",
