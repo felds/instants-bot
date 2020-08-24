@@ -1,10 +1,16 @@
-import { Snowflake, StreamDispatcher, VoiceChannel } from "discord.js";
+import {
+  Snowflake,
+  StreamDispatcher,
+  VoiceChannel,
+  VoiceConnection,
+} from "discord.js";
 import { connectToVoiceChannel } from "./discord";
 import { logger } from "./logging";
 
 export default class Queue {
   private isPlaying: boolean = false;
   private currentDispatcher?: StreamDispatcher;
+  private connection: VoiceConnection | null = null;
 
   readonly items: Instant[] = [];
 
@@ -18,6 +24,7 @@ export default class Queue {
       while (this.items.length) {
         await this.playNext();
       }
+      this.disconnect();
       this.isPlaying = false;
     }
   }
@@ -42,9 +49,12 @@ export default class Queue {
 
     return new Promise(async (resolve, reject) => {
       try {
-        const connection = await connectToVoiceChannel(this.voiceChannelId);
-        const dispatcher = connection.play(next.url);
-        dispatcher.setVolumeLogarithmic(0.666);
+        if (!this.connection) {
+          this.connection = await connectToVoiceChannel(this.voiceChannelId);
+        }
+
+        const dispatcher = this.connection.play(next.url);
+        dispatcher.setVolumeLogarithmic(0.8);
         dispatcher.on("finish", () => {
           this.items.shift(); // remove from the queue after playing
           resolve();
@@ -58,6 +68,39 @@ export default class Queue {
         resolve();
       }
     });
+  }
+
+  private async connect(): Promise<void> {
+    const { voiceChannelId } = this;
+
+    if (this.connection) {
+      logger.debug({ voiceChannelId }, "Already connected to voice channel.");
+      return;
+    }
+
+    try {
+      logger.debug({ voiceChannelId }, "Connecting to voice channel.");
+      this.connection = await connectToVoiceChannel(this.voiceChannelId);
+    } catch (err) {
+      logger.error(
+        { err, voiceChannelId },
+        "Error while connecting to voice channel.",
+      );
+      throw err;
+    }
+  }
+
+  private disconnect() {
+    const { voiceChannelId } = this;
+
+    if (!this.connection) {
+      logger.debug({ voiceChannelId }, "Not connected to voice channel.");
+      return;
+    }
+
+    logger.debug({ voiceChannelId }, "Disconnecting from voice channel.");
+    this.connection.disconnect();
+    this.connection = null;
   }
 }
 

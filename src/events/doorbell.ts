@@ -1,7 +1,7 @@
 import { VoiceState } from "discord.js";
 import { client } from "../discord";
-import { getQueue } from "../queue";
 import { logger } from "../logging";
+import { getQueue } from "../queue";
 
 const doorbells: { [k: string]: Instant } = {
   "517135926334324747": {
@@ -59,7 +59,7 @@ client.on(
       try {
         doorbellLogger.info(
           { clip: doorbells[member.id] },
-          "User has a doorbell. Playing."
+          "User has a doorbell. Playing.",
         );
         const queue = await getQueue(voiceChannel);
         queue.play(doorbells[member.id]);
@@ -67,5 +67,5 @@ client.on(
         doorbellLogger.error({ err }, "Error while playing doorbell.");
       }
     }
-  }
+  },
 );
