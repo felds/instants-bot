@@ -6,7 +6,7 @@ import Queue from "../queue";
 import { importDir } from "../util";
 
 const commands: Promise<Command[]> = importDir<{ command: Command }>(
-  join(__dirname, "../commands")
+  join(__dirname, "../commands"),
 ).then((modules) => modules.map((module) => module.command));
 
 export const command: Command = {
@@ -15,7 +15,7 @@ export const command: Command = {
   async process(message: Message, queue: Queue, ...args: string[]) {
     const helpText = (await commands)
       .map((cmd) => {
-        const xs = [config.prefix, cmd.aliases.join("|")].filter((x) => x);
+        const xs = [config.PREFIX, cmd.aliases.join("|")].filter((x) => x);
         return `\`${xs.join(" ")}\`: ${cmd.description}`;
       })
       .join("\n");

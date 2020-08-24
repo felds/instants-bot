@@ -2,13 +2,13 @@ import { VoiceChannel } from "discord.js";
 import { join } from "path";
 import config from "../config";
 import { client, getVoiceChannel } from "../discord";
+import { logger } from "../logging";
 import Queue, { getQueue } from "../queue";
 import { importDir } from "../util";
-import { logger } from "../logging";
 
 // import individual commands
 const commands: Promise<Command[]> = importDir<{ command: Command }>(
-  join(__dirname, "../commands")
+  join(__dirname, "../commands"),
 ).then((modules) => modules.map((module) => module.command));
 
 client.on("message", async (message) => {
@@ -38,7 +38,7 @@ client.on("message", async (message) => {
 function matchPrefix(content: string): boolean {
   const lowerContent = content.toLowerCase();
   return (
-    lowerContent.startsWith(config.prefix + " ") ||
-    lowerContent === config.prefix
+    lowerContent.startsWith(config.PREFIX + " ") ||
+    lowerContent === config.PREFIX
   );
 }
