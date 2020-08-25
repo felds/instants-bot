@@ -20,7 +20,11 @@ export default class Queue {
     if (!this.isPlaying) {
       this.isPlaying = true;
       while (this.items.length) {
-        await this.playNext();
+        try {
+          await this.playNext();
+        } catch (err) {
+          this.stop();
+        }
       }
       this.isPlaying = false;
     }
