@@ -25,27 +25,25 @@ client.on("voiceStateUpdate", async function voiceStateUpdate(
   oldState: VoiceState,
   newState: VoiceState,
 ) {
+  if (!shouldPlay(oldState, newState)) {
+    return;
+  }
+
+  const member = newState.member!;
+  const channel = newState.channel!;
+  const sound = sounds[member.id];
+
   try {
-    if (!shouldPlay(oldState, newState)) {
-      return;
-    }
-
-    const member = newState.member!;
-    const channel = newState.channel!;
-    const sound = sounds[member.id];
-
-    try {
-      const queue = getQueue(channel);
-      logger.debug({ sound }, "Playing buzzer.");
-      await queue.play(sound).catch((err) => console.log("OLHA O CATCH", err));
-    } catch (err) {
-      logger.fatal("%O", err);
-      if (err instanceof QueueException) {
-        logger.warn({ channel: err.channel.name }, err.message);
-      }
-    }
+    const queue = getQueue(channel);
+    logger.debug({ sound }, "Playing buzzer.");
+    await queue.play(sound);
   } catch (err) {
-    console.log("QUE CARALHOS TA ACONTECENDO");
+    if (err instanceof QueueException) {
+      logger.warn(
+        { channel: err.channel.name, guild: err.channel.guild.name },
+        err.message,
+      );
+    }
   }
 });
 
@@ -128,31 +126,24 @@ function createQueue(channel: VoiceChannel): NewQueue {
   }
 
   async function actuallyPlay(): Promise<void> {
-    const next = items[0];
-    if (!next) return;
+    await connect().then(
+      (connection) =>
+        new Promise((resolve, reject) => {
+          const next = items[0];
 
-    return new Promise(async (resolve, reject) => {
-      if (!connection) {
-        try {
-          connection = await connect();
-        } catch (err) {
-          console.log("Passando por aqui 1");
-          throw err;
-        }
-      }
-
-      dispatcher = connection.play(next.url);
-      dispatcher.setVolumeLogarithmic(0.8);
-      dispatcher.on("finish", () => {
-        logger.debug({ item: next }, "Queue item played successfully"); // remove item from playlist after playing it
-        resolve();
-      });
-      dispatcher.on("error", (err) => {
-        logger.error(err, "Error while playing queue item.");
-        kill(); // kill the playlist in case of error
-        reject();
-      });
-    });
+          dispatcher = connection.play(next.url);
+          dispatcher.setVolumeLogarithmic(0.8);
+          dispatcher.on("finish", () => {
+            logger.debug({ item: next }, "Queue item played successfully"); // remove item from playlist after playing it
+            resolve();
+          });
+          dispatcher.on("error", (err) => {
+            logger.error(err, "Error while playing queue item.");
+            kill(); // kill the playlist in case of error
+            reject();
+          });
+        }),
+    );
   }
 
   function skip() {
@@ -167,11 +158,16 @@ function createQueue(channel: VoiceChannel): NewQueue {
   }
 
   async function connect(): Promise<VoiceConnection> {
+    if (connection) {
+      return connection;
+    }
+
     if (!channel.joinable) {
       throw new QueueException("Channel is not joinable.", channel);
     }
+    connection = await channel.join();
 
-    return channel.join();
+    return connection;
   }
 
   return {
