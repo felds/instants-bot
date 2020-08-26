@@ -56,7 +56,7 @@ function createQueue(channel: VoiceChannel): Queue {
           const next = items[0];
 
           dispatcher = connection.play(next.url);
-          dispatcher.setVolumeLogarithmic(0.8);
+          dispatcher.setVolumeDecibels(80);
           dispatcher.on("finish", () => {
             logger.debug({ item: next }, "Queue item played successfully"); // remove item from playlist after playing it
             resolve();
