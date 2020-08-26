@@ -1,7 +1,8 @@
 import { ClientUser, Message, MessageReaction } from "discord.js";
 import { listInstants } from "../connector";
+import { logger } from "../logging";
 import { Embed } from "../message";
-import Queue from "../queue";
+import { Queue } from "../queue";
 
 const reactionIcons = "1️⃣,2️⃣,3️⃣,4️⃣,5️⃣,6️⃣,7️⃣,8️⃣,9️⃣".split(",");
 
@@ -9,10 +10,20 @@ export const command: Command = {
   aliases: [],
   description: "Busca as parada",
   async process(message: Message, queue: Queue, ...args: string[]) {
-    const searchTerms = args.join(" ");
-    const results = await listInstants(searchTerms, reactionIcons.length);
+    const terms = args.join(" ");
+
+    const myLogger = logger.child({
+      guild: message.member?.guild.name,
+      channel: message.member?.voice.channel?.name,
+      user: message.author.tag,
+      terms,
+    });
+
+    myLogger.trace("User made a new search.");
+    const results = await listInstants(terms, reactionIcons.length);
 
     if (results.length < 1) {
+      myLogger.trace("The search has yielded no results.");
       message.reply("Nachei nada, não!");
       return;
     }
@@ -24,13 +35,13 @@ export const command: Command = {
     const embed = await message.channel.send(
       new Embed({
         description: desc,
-      })
+      }),
     );
     for (const r of reactionIcons.slice(0, results.length)) {
       embed.react(r);
     }
     const filter = (reaction: MessageReaction, user: ClientUser) =>
-      reactionIcons.includes(reaction.emoji.name) && !user.bot; // && user.id === message.author.id;
+      reactionIcons.includes(reaction.emoji.name) && !user.bot;
     try {
       while (true) {
         const collected = await embed.awaitReactions(filter, {

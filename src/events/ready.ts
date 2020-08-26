@@ -1,21 +1,16 @@
-import { client } from "../discord";
 import config from "../config";
+import { client } from "../discord";
+import { logger } from "../logging";
 
 client.on("ready", () => {
-  console.log(`
----------------------
-
-  Estou pronto!
-  Estou pronto!
-    -- Bob Esponja
-
----------------------
-
-- Logged in as ${client.user?.tag}
-`);
+  logger.info(
+    { user: client.user?.tag },
+    "Logged in. Ready to debochar legal. Listening to prefix %O.",
+    config.PREFIX,
+  );
 
   client.user?.setActivity({
-    name: `${config.prefix} -help`,
+    name: `${config.PREFIX} -help`,
     type: "LISTENING",
   });
 });

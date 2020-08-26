@@ -1,9 +1,9 @@
 /**
  * Disconnects from the voice channel when there`s no users left.
  */
-
 import { VoiceState } from "discord.js";
 import { client } from "../discord";
+import { logger } from "../logging";
 
 client.on("voiceStateUpdate", (oldState: VoiceState, newState: VoiceState) => {
   const voiceChannel = oldState.channel;
@@ -23,6 +23,10 @@ client.on("voiceStateUpdate", (oldState: VoiceState, newState: VoiceState) => {
 
   const members = oldState.channel?.members!;
   if (members.every((m) => m.user.bot)) {
+    logger.info(
+      { guild: voiceChannel.guild.name, channel: oldState.channel?.name },
+      "I was left alone in the channel. Disconnecting."
+    );
     connection.disconnect();
   }
 });
