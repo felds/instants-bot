@@ -1,7 +1,7 @@
 import { VoiceState } from "discord.js";
 import { client } from "../discord";
 import { logger } from "../logging";
-import { getQueue } from "../queue";
+import { getQueue, QueueException } from "../queue";
 
 const doorbells: { [k: string]: Instant } = {
   "517135926334324747": {
@@ -35,37 +35,58 @@ const doorbells: { [k: string]: Instant } = {
   },
 };
 
-client.on(
-  "voiceStateUpdate",
-  async (oldState: VoiceState, newState: VoiceState) => {
-    const voiceChannel = newState.channel;
-    if (!voiceChannel) return; // not entering a voice channel
+client.on("voiceStateUpdate", async function voiceStateUpdate(
+  oldState: VoiceState,
+  newState: VoiceState,
+) {
+  if (!shouldPlay(oldState, newState)) {
+    return;
+  }
 
-    const member = newState.member;
-    if (!member || member.user.bot) return; // user is a bot
+  const member = newState.member!;
+  const channel = newState.channel!;
+  const sound = doorbells[member.id];
 
-    // user is not joinin a new server
-    if (oldState.channelID === newState.channelID) return; // not changing voice channels
-
-    const doorbellLogger = logger.child({
-      user: member.user.tag,
-      userId: member.user.id,
-      guild: member.guild.name,
-      channel: newState.channel?.name,
-    });
-
-    doorbellLogger.debug("User connected.");
-    if (doorbells[member.id]) {
-      try {
-        doorbellLogger.info(
-          { clip: doorbells[member.id] },
-          "User has a doorbell. Playing.",
-        );
-        const queue = await getQueue(voiceChannel);
-        queue.play(doorbells[member.id]);
-      } catch (err) {
-        doorbellLogger.error({ err }, "Error while playing doorbell.");
-      }
+  try {
+    const queue = getQueue(channel);
+    logger.debug({ sound }, "Playing buzzer.");
+    await queue.play(sound);
+  } catch (err) {
+    if (err instanceof QueueException) {
+      logger.warn(
+        { channel: err.channel.name, guild: err.channel.guild.name },
+        err.message,
+      );
     }
-  },
-);
+  }
+});
+
+function isJoining(oldState: VoiceState, newState: VoiceState): boolean {
+  return !!(newState.channel && oldState.channel !== newState.channel);
+}
+
+function shouldPlay(oldState: VoiceState, newState: VoiceState): boolean {
+  const { member } = newState;
+
+  if (!member) {
+    logger.debug("No member.");
+    return false;
+  }
+  if (member.user.bot) {
+    logger.trace({ user: member.user.tag }, "User is a bot.");
+    return false;
+  }
+  if (!isJoining(oldState, newState)) {
+    logger.trace(
+      { user: member.user.tag },
+      "User is not joining a new voice channel.",
+    );
+    return false;
+  }
+  if (!doorbells[member.id]) {
+    logger.trace({ user: member.user.tag }, "User is a bot.");
+    return false;
+  }
+
+  return true;
+}

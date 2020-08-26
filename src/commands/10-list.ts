@@ -1,6 +1,6 @@
 import { Message } from "discord.js";
 import { Embed } from "../message";
-import Queue from "../queue";
+import { Queue } from "../queue";
 
 const MAX_ROWS = 10;
 
@@ -14,7 +14,7 @@ export const command: Command = {
       message.channel.send(new Embed({ description: "Tem nada aqui não" }));
     } else {
       const items = queue.items.map(
-        (instant, i) => `${i ? "🖐" : "👉"} ${instant.title}`
+        (instant, i) => `${i ? "🖐" : "👉"} ${instant.title}`,
       );
       const description =
         "\n" +

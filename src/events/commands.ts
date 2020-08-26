@@ -3,7 +3,7 @@ import { join } from "path";
 import config from "../config";
 import { client, getVoiceChannel } from "../discord";
 import { logger } from "../logging";
-import Queue, { getQueue } from "../queue";
+import { getQueue, Queue } from "../queue";
 import { importDir } from "../util";
 
 // import individual commands
@@ -18,11 +18,11 @@ client.on("message", async (message) => {
   if (!matchPrefix(cleanContent)) return;
 
   // handle connections
-  let voiceChannel: VoiceChannel;
+  let channel: VoiceChannel;
   let queue: Queue;
   try {
-    voiceChannel = getVoiceChannel(message);
-    queue = await getQueue(voiceChannel);
+    channel = getVoiceChannel(message);
+    queue = getQueue(channel);
   } catch (err) {
     logger.error({ err }, "Error while connecting to the voice channel.");
     return message.reply(err.message);

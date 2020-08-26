@@ -4,120 +4,109 @@ import {
   VoiceChannel,
   VoiceConnection,
 } from "discord.js";
-import { connectToVoiceChannel } from "./discord";
 import { logger } from "./logging";
 
-export default class Queue {
-  private isPlaying: boolean = false;
-  private currentDispatcher?: StreamDispatcher;
-  private connection: VoiceConnection | null = null;
+export type Queue = {
+  play(instant: Instant): Promise<void>;
+  skip(): void;
+  kill(): void;
+  readonly isPlaying: boolean;
+  readonly items: Instant[];
+};
 
-  readonly items: Instant[] = [];
+const queues = new Map<Snowflake, Queue>();
 
-  constructor(private voiceChannelId: Snowflake) {}
-
-  public async play(item: Instant) {
-    this.items.push(item);
-
-    if (!this.isPlaying) {
-      this.isPlaying = true;
-      while (this.items.length) {
-        await this.playNext();
-      }
-      this.disconnect();
-      this.isPlaying = false;
-    }
+export function getQueue(channel: VoiceChannel): Queue {
+  if (!channel.joinable) {
+    logger.warn({ channel: channel.name }, "Channel is not joinable.");
   }
-
-  public skip() {
-    this.currentDispatcher?.end();
+  if (queues.has(channel.id)) {
+    return queues.get(channel.id)!;
   }
-
-  public stop() {
-    this.items.splice(0);
-    this.currentDispatcher?.end();
-    this.isPlaying = false;
-  }
-
-  /**
-   * Plays the next item and removes it from the queue.
-   * Cleans the queue in case of error.
-   */
-  protected async playNext(): Promise<void> {
-    const next = this.items[0];
-    if (!next) return;
-
-    return new Promise(async (resolve, reject) => {
-      try {
-        if (!this.connection) {
-          this.connection = await connectToVoiceChannel(this.voiceChannelId);
-        }
-
-        const dispatcher = this.connection.play(next.url);
-        dispatcher.setVolumeLogarithmic(0.8);
-        dispatcher.on("finish", () => {
-          this.items.shift(); // remove from the queue after playing
-          resolve();
-        });
-        dispatcher.on("error", () => {
-          this.items.splice(0); // clear the queue in case of error
-          reject();
-        });
-        this.currentDispatcher = dispatcher;
-      } catch (err) {
-        resolve();
-      }
-    });
-  }
-
-  private async connect(): Promise<void> {
-    const { voiceChannelId } = this;
-
-    if (this.connection) {
-      logger.debug({ voiceChannelId }, "Already connected to voice channel.");
-      return;
-    }
-
-    try {
-      logger.debug({ voiceChannelId }, "Connecting to voice channel.");
-      this.connection = await connectToVoiceChannel(this.voiceChannelId);
-    } catch (err) {
-      logger.error(
-        { err, voiceChannelId },
-        "Error while connecting to voice channel.",
-      );
-      throw err;
-    }
-  }
-
-  private disconnect() {
-    const { voiceChannelId } = this;
-
-    if (!this.connection) {
-      logger.debug({ voiceChannelId }, "Not connected to voice channel.");
-      return;
-    }
-
-    logger.debug({ voiceChannelId }, "Disconnecting from voice channel.");
-    this.connection.disconnect();
-    this.connection = null;
-  }
+  const queue = createQueue(channel);
+  queues.set(channel.id, queue);
+  return queue;
 }
 
-export const queues = new Map<Snowflake, Queue>();
+function createQueue(channel: VoiceChannel): Queue {
+  let connection: VoiceConnection | null = null;
+  let isPlaying: boolean = false;
+  let dispatcher: StreamDispatcher | null = null;
+  const items: Instant[] = [];
 
-export async function getQueue(voiceChannel: VoiceChannel): Promise<Queue> {
-  if (queues.has(voiceChannel.id)) {
-    logger.info({ voiceChannel }, "Queue for voice channel found.");
-    return queues.get(voiceChannel.id)!;
+  async function play(item: Instant) {
+    items.push(item);
+    if (!isPlaying) {
+      while (items.length) {
+        await actuallyPlay().catch((err) => {
+          console.log("Passa por aqui 2");
+          throw err;
+        });
+        items.shift();
+      }
+      isPlaying = false;
+      connection = null;
+    }
   }
 
-  logger.info(
-    { voiceChannel },
-    "Queue for voice channel not found. Creating a new one.",
-  );
-  const newQueue = new Queue(voiceChannel.id);
-  queues.set(voiceChannel.id, newQueue);
+  async function actuallyPlay(): Promise<void> {
+    await connect().then(
+      (connection) =>
+        new Promise((resolve, reject) => {
+          const next = items[0];
 
-  return newQueue;
+          dispatcher = connection.play(next.url);
+          dispatcher.setVolumeLogarithmic(0.8);
+          dispatcher.on("finish", () => {
+            logger.debug({ item: next }, "Queue item played successfully"); // remove item from playlist after playing it
+            resolve();
+          });
+          dispatcher.on("error", (err) => {
+            logger.error(err, "Error while playing queue item.");
+            kill(); // kill the playlist in case of error
+            reject();
+          });
+        }),
+    );
+  }
+
+  function skip() {
+    dispatcher?.end();
+  }
+
+  function kill() {
+    items.splice(0);
+    dispatcher?.end();
+    dispatcher = null;
+    isPlaying = false;
+  }
+
+  async function connect(): Promise<VoiceConnection> {
+    if (!channel.joinable) {
+      throw new QueueException("Channel is not joinable.", channel);
+    }
+
+    connection = await channel.join();
+
+    return connection;
+  }
+
+  return {
+    play,
+    skip,
+    kill,
+    get isPlaying() {
+      return isPlaying;
+    },
+    get items() {
+      return [...items];
+    },
+  };
+}
+
+export class QueueException extends Error {
+  constructor(message: string, readonly channel: VoiceChannel) {
+    super(message);
+  }
+  readonly name = "QueueException";
 }

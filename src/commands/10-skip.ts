@@ -1,5 +1,5 @@
 import { Message } from "discord.js";
-import Queue from "../queue";
+import { Queue } from "../queue";
 
 export const command: Command = {
   aliases: ["-j", "-s", "-jump", "-skip"],
