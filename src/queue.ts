@@ -72,6 +72,8 @@ export class Queue {
       (connection) =>
         new Promise((resolve, reject) => {
           const dispatcher = connection.play(next.url);
+
+          dispatcher.setVolumeLogarithmic(0.85);
           dispatcher.on("finish", () => {
             logger.debug({ item: next }, "Queue item played successfully");
             this.items.shift(); // remove item from playlist after playing it
