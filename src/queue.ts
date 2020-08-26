@@ -6,102 +6,110 @@ import {
 } from "discord.js";
 import { logger } from "./logging";
 
-export type Queue = {
-  play(instant: Instant): Promise<void>;
-  skip(): void;
-  kill(): void;
-  readonly isPlaying: boolean;
-  readonly items: Instant[];
-};
-
 const queues = new Map<Snowflake, Queue>();
 
-export function getQueue(channel: VoiceChannel): Queue {
-  if (!channel.joinable) {
-    logger.warn({ channel: channel.name }, "Channel is not joinable.");
-  }
-  if (queues.has(channel.id)) {
-    return queues.get(channel.id)!;
-  }
-  const queue = createQueue(channel);
-  queues.set(channel.id, queue);
-  return queue;
-}
+/**
+ * @TODO log channel and guild for everything
+ */
+export class Queue {
+  private isPlaying: boolean = false;
+  private dispatcher: StreamDispatcher | null = null;
+  readonly items: Instant[] = [];
 
-function createQueue(channel: VoiceChannel): Queue {
-  let connection: VoiceConnection | null = null;
-  let isPlaying: boolean = false;
-  let dispatcher: StreamDispatcher | null = null;
-  const items: Instant[] = [];
+  constructor(private channel: VoiceChannel) {}
 
-  async function play(item: Instant) {
-    items.push(item);
-    if (!isPlaying) {
-      while (items.length) {
-        await actuallyPlay().catch((err) => {
-          console.log("Passa por aqui 2");
+  /**
+   * @TODO log who did the thing
+   */
+  public async play(item: Instant) {
+    this.items.push(item);
+
+    if (!this.isPlaying) {
+      this.isPlaying = true;
+      while (this.items.length) {
+        try {
+          await this.playForRealsies();
+        } catch (err) {
+          this.kill();
           throw err;
-        });
-        items.shift();
+        }
       }
-      isPlaying = false;
-      connection = null;
+      logger.debug(
+        { guild: this.channel.guild.name, channel: this.channel.name },
+        "Queue finished.",
+      );
+      this.isPlaying = false;
     }
   }
 
-  async function actuallyPlay(): Promise<void> {
-    await connect().then(
+  /**
+   * @TODO log who did the thing
+   */
+  public skip() {
+    logger.debug("Item skipped by the user.");
+    this.dispatcher?.end();
+  }
+
+  /**
+   * @TODO log who did the thing
+   */
+  public kill() {
+    logger.debug("Queue cleared by the user.");
+    this.items.splice(0);
+    this.dispatcher?.end();
+    this.isPlaying = false;
+  }
+
+  /**
+   * Plays the next item and removes it from the queue.
+   * Cleans the queue in case of error.
+   */
+  private async playForRealsies(): Promise<void> {
+    const next = this.items[0];
+    if (!next) return;
+
+    await this.connect().then(
       (connection) =>
         new Promise((resolve, reject) => {
-          const next = items[0];
+          const dispatcher = connection.play(next.url);
 
-          dispatcher = connection.play(next.url);
-          dispatcher.setVolumeDecibels(80);
+          dispatcher.setVolumeDecibels(14);
           dispatcher.on("finish", () => {
-            logger.debug({ item: next }, "Queue item played successfully"); // remove item from playlist after playing it
+            logger.debug({ item: next }, "Queue item played successfully");
+            this.items.shift(); // remove item from playlist after playing it
             resolve();
           });
           dispatcher.on("error", (err) => {
             logger.error(err, "Error while playing queue item.");
-            kill(); // kill the playlist in case of error
+            this.kill(); // kill the playlist in case of error
             reject();
           });
+
+          this.dispatcher = dispatcher;
         }),
     );
   }
 
-  function skip() {
-    dispatcher?.end();
-  }
-
-  function kill() {
-    items.splice(0);
-    dispatcher?.end();
-    dispatcher = null;
-    isPlaying = false;
-  }
-
-  async function connect(): Promise<VoiceConnection> {
-    if (!channel.joinable) {
-      throw new QueueException("Channel is not joinable.", channel);
+  private async connect(): Promise<VoiceConnection> {
+    if (!this.channel.joinable) {
+      throw new QueueException("Channel is not joinable.", this.channel);
     }
+    return this.channel.join();
+  }
+}
 
-    connection = await channel.join();
+export function getQueue(channel: VoiceChannel): Queue {
+  // if (!channel.joinable) {
+  //   throw new QueueException("Query is not joinable.", channel);
+  // }
 
-    return connection;
+  if (queues.has(channel.id)) {
+    return queues.get(channel.id)!;
   }
 
-  return {
-    play,
-    skip,
-    kill,
-    get isPlaying() {
-      return isPlaying;
-    },
-    get items() {
-      return [...items];
-    },
-  };
+  const queue = new Queue(channel);
+  queues.set(channel.id, queue);
+  return queue;
 }
 
 export class QueueException extends Error {
