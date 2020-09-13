@@ -16,7 +16,7 @@
     "bunyan": "^1.8.14",
     "cheerio": "^1.0.0-rc.3",
     "discord.js": "^12.2.0",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.1",
     "ts-node": "^8.10.2",
     "typescript": "^3.9.7"
   },
