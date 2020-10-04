@@ -39,8 +39,6 @@ client.on("voiceStateUpdate", async function voiceStateUpdate(
   oldState: VoiceState,
   newState: VoiceState,
 ) {
-  return;
-
   if (!shouldPlay(oldState, newState)) {
     return;
   }
