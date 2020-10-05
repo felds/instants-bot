@@ -22,7 +22,7 @@ const doorbells: { [k: string]: Instant } = {
     title: "JAMAL entrou na sala",
   },
   "692852659765641337": {
-    url: "https://www.myinstants.com/media/sounds/manda_o_michael_manuel.mp3",
+    url: "https://www.myinstants.com/media/sounds/motoso_ola_amigao.mp3",
     title: "MOTOSO entrou na sala",
   },
   "172161615620341761": {
