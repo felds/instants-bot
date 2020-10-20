@@ -33,6 +33,10 @@ const doorbells: { [k: string]: Instant } = {
     url: "https://www.myinstants.com/media/sounds/hello_D4GzkfK.mp3",
     title: "MINION entrou na sala",
   },
+  "418762238506172416": {
+    url: "https://www.myinstants.com/media/sounds/olha_a_pedra.mp3",
+    title: "LARISSA entrou na sala",
+  },
 };
 
 client.on("voiceStateUpdate", async function voiceStateUpdate(
