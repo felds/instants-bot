@@ -36,33 +36,37 @@ const doorbells: { [k: string]: Instant } = {
     url: "https://www.myinstants.com/media/sounds/masculynah_QsNgdVk.mp3",
     title: "LARISSA entrou na sala",
   },
+  "795486816848969778": {
+    url: "https://www.myinstants.com/media/sounds/galvim_frota_demais.mp3",
+    title: "GALVIM entrou na sala",
+  },
 };
 
-client.on("voiceStateUpdate", async function voiceStateUpdate(
-  oldState: VoiceState,
-  newState: VoiceState,
-) {
-  if (!shouldPlay(oldState, newState)) {
-    return;
-  }
-
-  const member = newState.member!;
-  const channel = newState.channel!;
-  const sound = doorbells[member.id];
-
-  try {
-    const queue = getQueue(channel);
-    logger.debug({ sound }, "Playing buzzer.");
-    await queue.play(sound);
-  } catch (err) {
-    if (err instanceof QueueException) {
-      logger.warn(
-        { channel: err.channel.name, guild: err.channel.guild.name },
-        err.message,
-      );
+client.on(
+  "voiceStateUpdate",
+  async function voiceStateUpdate(oldState: VoiceState, newState: VoiceState) {
+    if (!shouldPlay(oldState, newState)) {
+      return;
     }
-  }
-});
+
+    const member = newState.member!;
+    const channel = newState.channel!;
+    const sound = doorbells[member.id];
+
+    try {
+      const queue = getQueue(channel);
+      logger.debug({ sound }, "Playing buzzer.");
+      await queue.play(sound);
+    } catch (err) {
+      if (err instanceof QueueException) {
+        logger.warn(
+          { channel: err.channel.name, guild: err.channel.guild.name },
+          err.message,
+        );
+      }
+    }
+  },
+);
 
 function isJoining(oldState: VoiceState, newState: VoiceState): boolean {
   return !!(newState.channel && oldState.channel !== newState.channel);
