@@ -40,6 +40,10 @@ const doorbells: { [k: string]: Instant } = {
     url: "https://www.myinstants.com/media/sounds/galvim_frota_demais.mp3",
     title: "GALVIM entrou na sala",
   },
+  "192677012207304704": {
+    url: "https://www.myinstants.com/media/sounds/untitled_890.mp3",
+    title: "ZÉ entrou na sala",
+  },
 };
 
 client.on(
