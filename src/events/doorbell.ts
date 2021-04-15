@@ -3,7 +3,7 @@ import { client } from "../discord";
 import { logger } from "../logging";
 import { getQueue, QueueException } from "../queue";
 
-const doorbells: { [k: string]: Instant } = {
+export const doorbells: { [k: string]: Instant } = {
   "517135926334324747": {
     url: "https://www.myinstants.com/media/sounds/eaburnea_u4ueT4r.mp3",
     title: "MIMA entrou na sala",

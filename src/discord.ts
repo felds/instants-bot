@@ -1,21 +1,21 @@
 import {
   Client,
   Message,
+  Snowflake,
   VoiceChannel,
   VoiceConnection,
-  Snowflake,
 } from "discord.js";
 
 export const client = new Client();
 
 export async function connectToVoiceChannel(
-  voiceChannelId: Snowflake
+  voiceChannelId: Snowflake,
 ): Promise<VoiceConnection> {
   const botUser = client.user;
   if (!botUser) throw new Error("quedê usuário?");
 
   const voiceChannel = client.channels.cache.get(
-    voiceChannelId
+    voiceChannelId,
   ) as VoiceChannel;
   const permissions = voiceChannel.permissionsFor(botUser);
 
@@ -25,7 +25,7 @@ export async function connectToVoiceChannel(
     !permissions.has("SPEAK")
   ) {
     throw new Error(
-      "eu não tenho permissão pra conectar nesse canal de voz [sad bot noises]."
+      "eu não tenho permissão pra conectar nesse canal de voz [sad bot noises].",
     );
   }
 
@@ -63,7 +63,7 @@ export function getVoiceChannel(message: Message): VoiceChannel {
 
   if (!voiceChannel) {
     throw new Error(
-      "você tem que estar conectado em um canal de voz para me usar (ui)."
+      "você tem que estar conectado em um canal de voz para me usar (ui).",
     );
   }
 

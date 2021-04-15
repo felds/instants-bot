@@ -4,6 +4,7 @@ import { join } from "path";
 import server from "./server-http";
 import config from "./src/config";
 import { client } from "./src/discord";
+import "./src/dm";
 import { importDir } from "./src/util";
 
 client.login(config.TOKEN);
