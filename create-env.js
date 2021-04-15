@@ -15,14 +15,15 @@ fs.doc(`AppConfig/env`)
   });
 
 function writeEnv(obj) {
-  const filename = "./.env.json";
+  const filename = ".env.json";
   const forced =
     process.argv.includes("-f") || process.argv.includes("--force");
 
   if (existsSync(filename) && !forced) {
-    console.error(".env file already exists. use `-- -f` to override.");
+    console.error(`${filename} file already exists. use "-- -f" to override.`);
     process.exit(1);
   }
 
-  writeFileSync("./.env.json", JSON.stringify(obj, null, 2));
+  writeFileSync(filename, JSON.stringify(obj, null, 2));
+  console.log(`Create env file: ${filename}`);
 }
