@@ -3,7 +3,7 @@ steps:
     name: gcr.io/cloud-builders/npm
     timeout: 600s
     args: [install]
-  - id: create-env
+  - id: build
     name: gcr.io/cloud-builders/npm
     args: [run, build]
     timeout: 60s
