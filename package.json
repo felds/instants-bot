@@ -6,7 +6,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon index.ts | bunyan",
+    "start": "ts-node index.ts | bunyan",
+    "dev": "nodemon index.ts | bunyan",
     "create-env": "node create-env.js"
   },
   "keywords": [],
