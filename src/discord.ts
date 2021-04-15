@@ -5,8 +5,10 @@ import {
   VoiceChannel,
   VoiceConnection,
 } from "discord.js";
+import config from "./config";
 
 export const client = new Client();
+client.login(config.TOKEN);
 
 export async function connectToVoiceChannel(
   voiceChannelId: Snowflake,
