@@ -6,9 +6,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "ts-node index.ts | bunyan",
-    "dev": "nodemon index.ts | bunyan",
-    "create-env": "node create-env.js"
+    "build": "rm -fr dist && tsc"
   },
   "keywords": [],
   "author": "",
@@ -20,14 +18,14 @@
     "discord.js": "^12.2.0",
     "firebase": "^8.4.1",
     "firebase-admin": "^9.6.0",
-    "node-fetch": "^2.6.1",
-    "ts-node": "^8.10.2",
-    "typescript": "^3.9.7"
+    "node-fetch": "^2.6.1"
   },
   "devDependencies": {
     "@types/bunyan": "^1.8.6",
     "@types/cheerio": "^0.22.21",
     "@types/node-fetch": "^2.5.7",
-    "nodemon": "^2.0.4"
+    "nodemon": "^2.0.4",
+    "typescript": "^3.9.7",
+    "ts-node": "^8.10.2"
   }
 }
