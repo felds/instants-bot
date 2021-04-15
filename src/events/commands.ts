@@ -1,6 +1,5 @@
 import { VoiceChannel } from "discord.js";
 import { join } from "path";
-import config from "../config";
 import { client, getVoiceChannel } from "../discord";
 import { logger } from "../logging";
 import { getQueue, Queue } from "../queue";
@@ -14,8 +13,13 @@ const commands: Promise<Command[]> = importDir<{ command: Command }>(
 client.on("message", async (message) => {
   if (message.author.bot) return;
 
+  const me = client.user!;
   const cleanContent = message.cleanContent.trim();
-  if (!matchPrefix(cleanContent)) return;
+
+  if (!message.mentions.has(me)) return;
+  // remove myself from the message string
+  const mentionTag = `@${me.username}`;
+  const commandText = cleanContent.replace(mentionTag, "").trim();
 
   // handle connections
   let channel: VoiceChannel;
@@ -28,17 +32,9 @@ client.on("message", async (message) => {
     return message.reply(err.message);
   }
 
-  const args = cleanContent.split(/\s+/).slice(1);
+  const args = commandText.split(/\s+/);
   for (const command of await commands) {
     if (command.aliases.length && !command.aliases.includes(args[0])) continue;
     return command.process(message, queue, ...args);
   }
 });
-
-function matchPrefix(content: string): boolean {
-  const lowerContent = content.toLowerCase();
-  return (
-    lowerContent.startsWith(config.PREFIX + " ") ||
-    lowerContent === config.PREFIX
-  );
-}

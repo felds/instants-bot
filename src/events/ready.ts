@@ -8,9 +8,4 @@ client.on("ready", () => {
     "Logged in. Ready to debochar legal. Listening to prefix %O.",
     config.PREFIX,
   );
-
-  client.user?.setActivity({
-    name: `${config.PREFIX} -help`,
-    type: "LISTENING",
-  });
 });
