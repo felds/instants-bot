@@ -2,49 +2,7 @@ import { VoiceState } from "discord.js";
 import { client } from "../discord";
 import { logger } from "../logging";
 import { getQueue, QueueException } from "../queue";
-
-export const doorbells: { [k: string]: Instant } = {
-  "517135926334324747": {
-    url: "https://www.myinstants.com/media/sounds/eaburnea_u4ueT4r.mp3",
-    title: "MIMA entrou na sala",
-  },
-  "109491752984907776": {
-    url: "https://www.myinstants.com/media/sounds/oi_demonios_amp.mp3",
-    title: "FELDS entrou na sala",
-  },
-  "338896627228213248": {
-    url: "https://www.myinstants.com/media/sounds/517135926334324747.mp3",
-    title: "YURI entrou na sala",
-  },
-  "229722390437822464": {
-    url: "https://www.myinstants.com/media/sounds/jamal.mp3",
-    title: "JAMAL entrou na sala",
-  },
-  "692852659765641337": {
-    url: "https://www.myinstants.com/media/sounds/manuca_ola_amigao.mp3",
-    title: "MOTOSO entrou na sala",
-  },
-  "172161615620341761": {
-    url: "https://www.myinstants.com/media/sounds/carrera_eh_verdade.mp3",
-    title: "CARRERA entrou na sala",
-  },
-  "741127151289499709": {
-    url: "https://www.myinstants.com/media/sounds/hello_D4GzkfK.mp3",
-    title: "MINION entrou na sala",
-  },
-  "418762238506172416": {
-    url: "https://www.myinstants.com/media/sounds/filin_sa_feifers.mp3",
-    title: "LARISSA entrou na sala",
-  },
-  "235840208581558272": {
-    url: "https://www.myinstants.com/media/sounds/galvim_frota_demais.mp3",
-    title: "GALVIM entrou na sala",
-  },
-  "192677012207304704": {
-    url: "https://www.myinstants.com/media/sounds/untitled_890.mp3",
-    title: "ZÉ entrou na sala",
-  },
-};
+import { getUserConfig } from "../util/firebase";
 
 client.on(
   "voiceStateUpdate",
@@ -54,13 +12,22 @@ client.on(
     }
 
     const member = newState.member!;
+
+    // console.log("LOGOU", member.id, member.user.id);
+    const userConfig = await getUserConfig(member.id);
+    // @ts-ignore
+    const url = userConfig?.doorbell as string | undefined;
     const channel = newState.channel!;
-    const sound = doorbells[member.id];
+
+    if (!url) return;
 
     try {
       const queue = getQueue(channel);
-      logger.debug({ sound }, "Playing buzzer.");
-      await queue.play(sound);
+      logger.debug({ url }, "Playing buzzer.");
+      await queue.play({
+        url,
+        title: `🥑 ${member.displayName}`,
+      });
     } catch (err) {
       if (err instanceof QueueException) {
         logger.warn(
@@ -92,10 +59,6 @@ function shouldPlay(oldState: VoiceState, newState: VoiceState): boolean {
       { user: member.user.tag },
       "User is not joining a new voice channel.",
     );
-    return false;
-  }
-  if (!doorbells[member.id]) {
-    logger.trace({ user: member.user.tag }, "User is a bot.");
     return false;
   }
 
