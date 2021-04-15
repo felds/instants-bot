@@ -59,9 +59,9 @@ async function searchResultsEmbed(
     }),
   );
 
-  await Promise.all([
-    reactionIcons.slice(0, results.length).map((r) => embed.react(r)),
-  ]);
+  for (const r of reactionIcons.slice(0, results.length)) {
+    await embed.react(r);
+  }
 
   const filter = (reaction: MessageReaction, user: ClientUser) =>
     reactionIcons.includes(reaction.emoji.name) && !user.bot;

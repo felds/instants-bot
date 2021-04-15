@@ -1,4 +1,4 @@
-import { MessageMentions, Util, VoiceChannel } from "discord.js";
+import { VoiceChannel } from "discord.js";
 import { join } from "path";
 import { client, getVoiceChannel } from "../discord";
 import { logger } from "../logging";
@@ -29,15 +29,6 @@ client.on("message", async (message) => {
 
   const squeakyCleanContent = message.content.replace(/<[@#&].*?>/g, "").trim();
   const args = squeakyCleanContent.split(/\s+/);
-  console.log({
-    args,
-    squeakyCleanContent,
-    content: message.content,
-    removeMentions: Util.removeMentions(message.content),
-    removeMentionsClean: Util.removeMentions(message.cleanContent),
-    mentions: message.mentions.users.map((u) => String(u)),
-    x: MessageMentions,
-  });
   for (const command of await commands) {
     if (command.aliases.length && !command.aliases.includes(args[0])) continue;
     return command.process(message, queue, ...args);
