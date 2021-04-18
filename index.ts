@@ -1,16 +1,17 @@
 /// <reference path="./src/types.d.ts" />
 
 import http from "http";
-import { loadAppConfig } from "./src/util/firebase";
 
 async function main() {
-  await loadAppConfig();
+  // await loadAppConfig();
 
   await Promise.all([
     // load modules
     import("./src/dm"),
     import("./src/events"),
   ]);
+
+  console.log("Hora do show, porra!");
 }
 main().catch((err) => `Oops! Something went wrong...\n\n${err}`);
 
