@@ -3,6 +3,7 @@ import { listInstants } from "../connector";
 import { logger } from "../logging";
 import { Embed } from "../message";
 import { Queue } from "../queue";
+import { searchGifs } from "../util/tenor";
 
 const reactionIcons = "1️⃣,2️⃣,3️⃣,4️⃣,5️⃣,6️⃣,7️⃣,8️⃣,9️⃣".split(",");
 
@@ -20,7 +21,10 @@ export const command: Command = {
     });
 
     myLogger.trace("User made a new search.");
-    const results = await listInstants(terms, reactionIcons.length);
+    const [results, gifs] = await Promise.all([
+      listInstants(terms, reactionIcons.length),
+      searchGifs(terms, reactionIcons.length),
+    ]);
 
     if (results.length < 1) {
       myLogger.trace("The search has yielded no results.");
@@ -52,6 +56,7 @@ export const command: Command = {
           const emoji = r.emoji.name!;
           const i = reactionIcons.indexOf(emoji);
           const instant = results[i];
+          message.channel.send(gifs[i].url);
           queue.play(instant);
         }
       }
