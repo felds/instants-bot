@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rm -fr dist && tsc",
@@ -21,7 +21,8 @@
     "discord.js": "^12.2.0",
     "firebase": "^8.4.1",
     "firebase-admin": "^9.6.0",
-    "node-fetch": "^2.6.1"
+    "node-fetch": "^2.6.1",
+    "opusscript": "0.0.8"
   },
   "devDependencies": {
     "@types/bunyan": "^1.8.6",
