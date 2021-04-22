@@ -56,8 +56,10 @@ export const command: Command = {
           const emoji = r.emoji.name!;
           const i = reactionIcons.indexOf(emoji);
           const instant = results[i];
-          message.channel.send(gifs[i].url);
-          queue.play(instant);
+          queue.play(instant, () => {
+            const gif = gifs[i];
+            if (gif) message.channel.send(gif.url);
+          });
         }
       }
     } catch (_) {

@@ -1,6 +1,7 @@
 type Instant = {
   title: string;
   url: string;
+  gif?: string;
 };
 
 type Command = {

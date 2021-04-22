@@ -21,13 +21,14 @@ export class Queue {
   /**
    * @TODO log who did the thing
    */
-  public async play(item: Instant) {
+  public async play(item: Instant, onStart?: () => void) {
     this.items.push(item);
 
     if (!this.isPlaying) {
       this.isPlaying = true;
       while (this.items.length) {
         try {
+          onStart?.();
           await this.playForRealsies();
         } catch (err) {
           this.kill();
