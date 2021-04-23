@@ -23,7 +23,7 @@ export const command: Command = {
     myLogger.trace("User made a new search.");
     const [results, gifs] = await Promise.all([
       listInstants(terms, reactionIcons.length),
-      searchGifs(terms, reactionIcons.length),
+      searchGifs(terms, 50),
     ]);
 
     if (results.length < 1) {
