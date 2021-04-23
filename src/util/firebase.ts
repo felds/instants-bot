@@ -22,11 +22,3 @@ export async function setUserConfig(
   const doc = await fs.doc(docId).get();
   return doc.data() || {};
 }
-
-export async function loadAppConfig(): Promise<void> {
-  const doc = await fs.doc("AppConfig/env").get();
-  const data = doc.data() ?? {};
-  Object.entries(data).forEach(([k, v]) => {
-    process.env[k] = process.env[k] ?? v;
-  });
-}

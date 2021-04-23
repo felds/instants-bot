@@ -17,7 +17,7 @@ client.on("voiceStateUpdate", (oldState: VoiceState, newState: VoiceState) => {
   if (oldState.channelID === newState.channelID) return;
 
   const connection = client.voice?.connections.find((c) =>
-    c.channel.equals(oldState.channel!)
+    c.channel.equals(oldState.channel!),
   );
   if (!connection) return;
 
@@ -25,7 +25,7 @@ client.on("voiceStateUpdate", (oldState: VoiceState, newState: VoiceState) => {
   if (members.every((m) => m.user.bot)) {
     logger.info(
       { guild: voiceChannel.guild.name, channel: oldState.channel?.name },
-      "I was left alone in the channel. Disconnecting."
+      "I was left alone in the channel. Disconnecting.",
     );
     connection.disconnect();
   }

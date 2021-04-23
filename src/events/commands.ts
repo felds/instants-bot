@@ -1,5 +1,6 @@
 import { VoiceChannel } from "discord.js";
 import { join } from "path";
+import config from "../config";
 import { client, getVoiceChannel } from "../discord";
 import { logger } from "../logging";
 import { getQueue, Queue } from "../queue";
@@ -13,8 +14,11 @@ const commands: Promise<Command[]> = importDir<{ command: Command }>(
 client.on("message", async (message) => {
   if (message.author.bot) return;
 
-  const me = client.user!;
-  if (!message.mentions.has(me)) return;
+  const cleanContent = message.cleanContent;
+  const [prefix, ...args] = cleanContent.split(/\s+/);
+
+  // not a command for me
+  if (prefix !== config.PREFIX) return;
 
   // handle connections
   let channel: VoiceChannel;
@@ -27,8 +31,6 @@ client.on("message", async (message) => {
     return message.reply(err.message);
   }
 
-  const squeakyCleanContent = message.content.replace(/<[@#&].*?>/g, "").trim();
-  const args = squeakyCleanContent.split(/\s+/);
   for (const command of await commands) {
     if (command.aliases.length && !command.aliases.includes(args[0])) continue;
     return command.process(message, queue, ...args);
