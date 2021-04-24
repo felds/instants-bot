@@ -27,11 +27,8 @@ client.on("message", async (message) => {
     return;
   }
 
-  const reactionCollector = await searchResultsEmbed(message, results, {
-    max: 1,
-  });
-  /** @todo extrair isso aqui */
-  reactionCollector.once("collect", async (reaction, user) => {
+  const reactionCollector = await searchResultsEmbed(message, results);
+  reactionCollector.on("collect", async (reaction, user) => {
     const emoji = reaction.emoji.name!;
     const i = reactionIcons.indexOf(emoji);
     const instant = results[i];
@@ -41,7 +38,6 @@ client.on("message", async (message) => {
     });
 
     message.reply(format("Pronto. Sua campainha é a `%s`.", instant.title));
-    await reactionCollector.message.delete();
   });
 });
 
@@ -59,17 +55,8 @@ async function searchResultsEmbed(
   });
   const sentMessage = await msg.channel.send(embed);
 
-  console.log("");
-  console.log("");
-  console.log("");
-  console.log("Entrando no loop do id #" + sentMessage.id);
   for (const r of reactionIcons.slice(0, results.length)) {
-    console.log("Reagindo ao id #" + sentMessage.id);
-    sentMessage.react(r).catch((err: Error) => {
-      console.log(
-        "Não foi possível reagir porque " + err.name + " " + sentMessage.id,
-      );
-    });
+    sentMessage.react(r).catch(() => {});
   }
 
   const filter = (reaction: MessageReaction, user: ClientUser) =>
