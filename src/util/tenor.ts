@@ -25,7 +25,7 @@ export async function searchGifs(
   q: string,
   limit: number = 10,
 ): Promise<Gif[]> {
-  assert(q !== "", `Q should be a non-empty string.`);
+  assert(q !== "", `search terms (q) should be a non-empty string.`);
   assert(
     limit > 0 && Number.isInteger(limit),
     `Limit should be a positive integer. (${limit} given)`,
