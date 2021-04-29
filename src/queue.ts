@@ -5,6 +5,7 @@ import {
   VoiceConnection,
 } from "discord.js";
 import { logger } from "./logging";
+import { Instant } from "./model/Instant";
 
 const queues = new Map<Snowflake, Queue>();
 

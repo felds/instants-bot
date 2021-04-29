@@ -1,11 +1,12 @@
-import fetch from "node-fetch";
 import * as cheerio from "cheerio";
+import fetch from "node-fetch";
+import { Instant } from "./model/Instant";
 
 const BASE_URL = "https://www.myinstants.com";
 
 export async function listInstants(
   search?: string,
-  maxResults: number = 5
+  maxResults: number = 5,
 ): Promise<Instant[]> {
   const url = search ? getSearchUrl(search) : getHomeUrl();
 
@@ -15,7 +16,7 @@ export async function listInstants(
   const instants = $("div.instant")
     .map((i, el) => {
       const attr = $('div.small-button[onmousedown^="play"]', el).attr(
-        "onmousedown"
+        "onmousedown",
       );
       if (!attr) return;
 
