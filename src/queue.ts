@@ -1,4 +1,5 @@
 import {
+  Guild,
   Snowflake,
   StreamDispatcher,
   VoiceChannel,
@@ -17,7 +18,7 @@ export class Queue {
   private dispatcher: StreamDispatcher | null = null;
   readonly items: Instant[] = [];
 
-  constructor(private channel: VoiceChannel) {}
+  constructor(private guild: Guild) {}
 
   /**
    * @TODO log who did the thing
@@ -36,10 +37,7 @@ export class Queue {
           throw err;
         }
       }
-      logger.debug(
-        { guild: this.channel.guild.name, channel: this.channel.name },
-        "Queue finished.",
-      );
+      logger.debug({ guild: this.guild.name }, "Queue finished.");
       this.isPlaying = false;
     }
   }
@@ -70,26 +68,26 @@ export class Queue {
     const next = this.items[0];
     if (!next) return;
 
-    await this.connect().then(
-      (connection) =>
-        new Promise((resolve, reject) => {
-          const dispatcher = connection.play(next.url);
+    const connection = await this.connect();
+    await new Promise<void>((resolve, reject) => {
+      const dispatcher = connection.play(next.url);
 
-          dispatcher.setVolumeLogarithmic(0.85);
-          dispatcher.on("finish", () => {
-            logger.debug({ item: next }, "Queue item played successfully");
-            this.items.shift(); // remove item from playlist after playing it
-            resolve();
-          });
-          dispatcher.on("error", (err) => {
-            logger.error(err, "Error while playing queue item.");
-            this.kill(); // kill the playlist in case of error
-            reject();
-          });
+      dispatcher.setVolumeLogarithmic(0.85);
+      dispatcher.on("finish", () => {
+        logger.debug({ item: next }, "Queue item played successfully");
+        // remove item from playlist AFTER playing it
+        // so it can be shown as "playing"
+        this.items.shift();
+        resolve();
+      });
+      dispatcher.on("error", (err) => {
+        logger.error(err, "Error while playing queue item.");
+        this.kill(); // kill the playlist in case of error
+        reject();
+      });
 
-          this.dispatcher = dispatcher;
-        }),
-    );
+      this.dispatcher = dispatcher;
+    });
   }
 
   private async connect(): Promise<VoiceConnection> {
