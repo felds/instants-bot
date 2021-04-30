@@ -1,5 +1,6 @@
 /// <reference path="./src/types.d.ts" />
 
+logger.fatal("Lá vem o negão.");
 console.log(`
   Lá vem o negão
   Cheio de paixão
@@ -77,8 +78,9 @@ console.log(`
   Ulisses Souza
   Lá vem o negão
   Sou eu
-        -- La vem o negao - Cravo e Canella
 `);
+logger.fatal("Cravo e Canella");
 
 import "./src/dm";
 import "./src/events";
+import { logger } from "./src/logging";
