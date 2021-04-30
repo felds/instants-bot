@@ -14,7 +14,6 @@ client.on(
     const member = newState.member!;
 
     const userConfig = await getUserConfig(member.id);
-    // @ts-ignore @FIXME
     const url = userConfig?.doorbell as string | undefined;
     const channel = newState.channel!;
 
@@ -23,11 +22,11 @@ client.on(
     try {
       const queue = getQueue(newState.guild);
       logger.debug({ url }, "Playing buzzer.");
-      // @FIXME
-      // await queue.play({
-      //   url,
-      //   title: `🥑 ${member.displayName}`,
-      // });
+      await queue.play({
+        url,
+        title: `🥑 ${member.displayName}`,
+        voiceChannel: channel,
+      });
     } catch (err) {
       if (err instanceof QueueException) {
         logger.warn(

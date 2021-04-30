@@ -1,7 +1,9 @@
 import { Message } from "discord.js";
 import { listInstants } from "../connector";
+import { getVoiceChannel } from "../discord";
 import { logger } from "../logging";
 import { createSearchResultsEmbed, REACTION_ICONS } from "../message";
+import { Instant } from "../model/Instant";
 import { Queue } from "../queue";
 import { searchGifs } from "../util/tenor";
 
@@ -31,12 +33,16 @@ export const command: Command = {
     }
 
     createSearchResultsEmbed(message, results, (i) => {
-      const instant = results[i];
-      // @FIXME
-      // queue.play(instant, () => {
-      //   const gif = gifs[i];
-      //   if (gif) message.channel.send(gif.url);
-      // });
+      const instant: Instant = {
+        ...results[i],
+        voiceChannel: getVoiceChannel(message),
+        onStart: () => {
+          const gif = gifs[i];
+          if (gif) message.channel.send(gif.url);
+        },
+      };
+
+      queue.play(instant);
     });
   },
 };

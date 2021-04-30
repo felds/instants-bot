@@ -67,7 +67,7 @@ export class Queue {
     const next = this.items[0];
     if (!next) return;
 
-    const connection = await this.connect();
+    const connection = await this.connect(next.voiceChannel);
     await new Promise<void>((resolve, reject) => {
       const dispatcher = connection.play(next.url);
 
@@ -89,14 +89,11 @@ export class Queue {
     });
   }
 
-  // @ts-ignore
-  private async connect(): Promise<VoiceConnection> {
-    /**
-    if (!this.channel.joinable) {
-      throw new QueueException("Channel is not joinable.", this.channel);
+  private async connect(voiceChannel: VoiceChannel): Promise<VoiceConnection> {
+    if (!voiceChannel.joinable) {
+      throw new QueueException("Channel is not joinable.", voiceChannel);
     }
-    return this.channel.join();
-     */
+    return voiceChannel.join();
   }
 }
 
