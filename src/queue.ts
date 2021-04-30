@@ -1,6 +1,5 @@
 import {
   Guild,
-  Snowflake,
   StreamDispatcher,
   VoiceChannel,
   VoiceConnection,
@@ -8,7 +7,7 @@ import {
 import { logger } from "./logging";
 import { Instant } from "./model/Instant";
 
-const queues = new Map<Snowflake, Queue>();
+const queues = new WeakMap<Guild, Queue>();
 
 /**
  * @TODO log channel and guild for everything
@@ -90,25 +89,22 @@ export class Queue {
     });
   }
 
+  // @ts-ignore
   private async connect(): Promise<VoiceConnection> {
+    /**
     if (!this.channel.joinable) {
       throw new QueueException("Channel is not joinable.", this.channel);
     }
     return this.channel.join();
+     */
   }
 }
 
-export function getQueue(channel: VoiceChannel): Queue {
-  // if (!channel.joinable) {
-  //   throw new QueueException("Query is not joinable.", channel);
-  // }
+export function getQueue(guild: Guild): Queue {
+  if (queues.has(guild)) return queues.get(guild)!;
 
-  if (queues.has(channel.id)) {
-    return queues.get(channel.id)!;
-  }
-
-  const queue = new Queue(channel);
-  queues.set(channel.id, queue);
+  const queue = new Queue(guild);
+  queues.set(guild, queue);
   return queue;
 }
 

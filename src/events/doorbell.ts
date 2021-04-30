@@ -13,21 +13,21 @@ client.on(
 
     const member = newState.member!;
 
-    // console.log("LOGOU", member.id, member.user.id);
     const userConfig = await getUserConfig(member.id);
-    // @ts-ignore
+    // @ts-ignore @FIXME
     const url = userConfig?.doorbell as string | undefined;
     const channel = newState.channel!;
 
     if (!url) return;
 
     try {
-      const queue = getQueue(channel);
+      const queue = getQueue(newState.guild);
       logger.debug({ url }, "Playing buzzer.");
-      await queue.play({
-        url,
-        title: `🥑 ${member.displayName}`,
-      });
+      // @FIXME
+      // await queue.play({
+      //   url,
+      //   title: `🥑 ${member.displayName}`,
+      // });
     } catch (err) {
       if (err instanceof QueueException) {
         logger.warn(

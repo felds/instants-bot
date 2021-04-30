@@ -32,10 +32,11 @@ export const command: Command = {
 
     createSearchResultsEmbed(message, results, (i) => {
       const instant = results[i];
-      queue.play(instant, () => {
-        const gif = gifs[i];
-        if (gif) message.channel.send(gif.url);
-      });
+      // @FIXME
+      // queue.play(instant, () => {
+      //   const gif = gifs[i];
+      //   if (gif) message.channel.send(gif.url);
+      // });
     });
   },
 };
