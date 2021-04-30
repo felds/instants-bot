@@ -9,9 +9,6 @@ import { Instant } from "./model/Instant";
 
 const queues = new WeakMap<Guild, Queue>();
 
-/**
- * @TODO log channel and guild for everything
- */
 export class Queue {
   private isPlaying: boolean = false;
   private dispatcher: StreamDispatcher | null = null;
@@ -19,9 +16,6 @@ export class Queue {
 
   constructor(private guild: Guild) {}
 
-  /**
-   * @TODO log who did the thing
-   */
   public async play(item: Instant) {
     this.items.push(item);
 
@@ -41,19 +35,13 @@ export class Queue {
     }
   }
 
-  /**
-   * @TODO log who did the thing
-   */
   public skip() {
     logger.debug("Item skipped by the user.");
     this.dispatcher?.end();
   }
 
-  /**
-   * @TODO log who did the thing
-   */
   public kill() {
-    logger.debug("Queue cleared by the user.");
+    logger.debug("Queue cleared.");
     this.items.splice(0);
     this.dispatcher?.end();
     this.isPlaying = false;
@@ -72,10 +60,14 @@ export class Queue {
       const dispatcher = connection.play(next.url);
 
       dispatcher.setVolumeLogarithmic(0.85);
-      dispatcher.on("finish", () => {
-        logger.debug({ item: next }, "Queue item played successfully");
-        // remove item from playlist AFTER playing it
-        // so it can be shown as "playing"
+      dispatcher.on("unpipe", () => {
+        const item = {
+          url: next.url,
+          title: next.title,
+          voiceChannel: next.voiceChannel.name,
+        };
+        logger.debug(item, "Queue item played successfully");
+        // remove item from playlist AFTER playing it so it can be shown as "playing"
         this.items.shift();
         resolve();
       });
