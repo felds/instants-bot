@@ -1,9 +1,3 @@
-type Instant = {
-  title: string;
-  url: string;
-  gif?: string;
-};
-
 type Command = {
   aliases: string[];
   description: string;

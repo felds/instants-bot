@@ -1,9 +1,9 @@
-import { VoiceChannel } from "discord.js";
+import assert from "assert";
 import { join } from "path";
 import config from "../config";
-import { client, getVoiceChannel } from "../discord";
+import { client } from "../discord";
 import { logger } from "../logging";
-import { getQueue, Queue } from "../queue";
+import { getQueue } from "../queue";
 import { importDir } from "../util";
 
 // import individual commands
@@ -21,15 +21,16 @@ client.on("message", async (message) => {
   if (prefix !== config.PREFIX) return;
 
   // handle connections
-  let channel: VoiceChannel;
-  let queue: Queue;
-  try {
-    channel = getVoiceChannel(message);
-    queue = getQueue(channel);
-  } catch (err) {
-    logger.error({ err }, "Error while connecting to the voice channel.");
-    return message.reply(err.message);
-  }
+  const queue = (() => {
+    try {
+      const guild = message.guild;
+      assert(guild, new Error("The message doesn't have a guild."));
+      return getQueue(message.guild!);
+    } catch (err) {
+      logger.error({ err }, "Error while connecting to the voice channel.");
+      return message.reply(err.message);
+    }
+  })();
 
   for (const command of await commands) {
     if (command.aliases.length && !command.aliases.includes(args[0])) continue;
