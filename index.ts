@@ -1,5 +1,9 @@
 /// <reference path="./src/types.d.ts" />
 
+import "./src/dm";
+import "./src/events";
+import { logger } from "./src/logging";
+
 logger.fatal("Lá vem o negão.");
 console.log(`
   Lá vem o negão
@@ -80,7 +84,3 @@ console.log(`
   Sou eu
 `);
 logger.fatal("Cravo e Canella");
-
-import "./src/dm";
-import "./src/events";
-import { logger } from "./src/logging";
