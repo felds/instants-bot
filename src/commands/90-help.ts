@@ -12,7 +12,11 @@ const commands: Promise<Command[]> = importDir<{ command: Command }>(
 export const command: Command = {
   aliases: ["-h", "-help"],
   description: "Esse troço aqui",
-  async process(message: Message, queue: Queue, ...args: string[]) {
+  async process(
+    message: Message,
+    queue: Queue,
+    ...args: string[]
+  ): Promise<void> {
     const helpText = (await commands)
       .map((cmd) => {
         const xs = [config.PREFIX, cmd.aliases.join("|")].filter((x) => x);
@@ -25,6 +29,6 @@ export const command: Command = {
       description,
     });
 
-    message.channel.send(embed);
+    await message.channel.send(embed);
   },
 };
