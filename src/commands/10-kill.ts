@@ -5,9 +5,9 @@ import { Queue } from "../queue";
 export const command: Command = {
   aliases: ["-k", "-stop", "-kill"],
   description: "Mata a fila",
-  process(message: Message, queue: Queue) {
+  async process(message: Message, queue: Queue) {
     queue.kill();
-    message.channel.send(
+    await message.channel.send(
       new Embed({ description: "🔥 *Fogo na babilônia* 🔥" }),
     );
   },

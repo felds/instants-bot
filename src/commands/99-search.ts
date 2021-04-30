@@ -20,6 +20,8 @@ export const command: Command = {
       terms,
     });
 
+    const voiceChannel = getVoiceChannel(message);
+
     myLogger.trace("User made a new search.");
     const [results, gifs] = await Promise.all([
       listInstants(terms, REACTION_ICONS.length),
@@ -35,7 +37,7 @@ export const command: Command = {
     createSearchResultsEmbed(message, results, (i) => {
       const instant: Instant = {
         ...results[i],
-        voiceChannel: getVoiceChannel(message),
+        voiceChannel,
         onStart: () => {
           const gif = gifs[i];
           if (gif) message.channel.send(gif.url);

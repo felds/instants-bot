@@ -1,10 +1,16 @@
 import assert from "assert";
+import { Message } from "discord.js";
 import { join } from "path";
 import config from "../config";
 import { client } from "../discord";
-import { logger } from "../logging";
-import { getQueue } from "../queue";
+import { getQueue, Queue } from "../queue";
 import { importDir } from "../util";
+
+export type Command = {
+  aliases: string[];
+  description: string;
+  process: (message: Message, queue: Queue, ...args: string[]) => Promise<void>;
+};
 
 // import individual commands
 const commands: Promise<Command[]> = importDir<{ command: Command }>(
@@ -21,19 +27,18 @@ client.on("message", async (message) => {
   if (prefix !== config.PREFIX) return;
 
   // handle connections
-  const queue = (() => {
-    try {
-      const guild = message.guild;
-      assert(guild, new Error("The message doesn't have a guild."));
-      return getQueue(message.guild!);
-    } catch (err) {
-      logger.error({ err }, "Error while connecting to the voice channel.");
-      return message.reply(err.message);
-    }
-  })();
+  try {
+    const guild = message.guild;
+    assert(guild, new Error("The message doesn't have a guild."));
 
-  for (const command of await commands) {
-    if (command.aliases.length && !command.aliases.includes(args[0])) continue;
-    return command.process(message, queue, ...args);
+    const queue = getQueue(guild);
+
+    for (const command of await commands) {
+      if (command.aliases.length && !command.aliases.includes(args[0]))
+        continue;
+      await command.process(message, queue, ...args);
+    }
+  } catch (err) {
+    message.reply(err.message);
   }
 });
