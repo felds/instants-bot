@@ -11,11 +11,12 @@ client.on(
       return;
     }
 
-    const member = newState.member!;
+    if (!newState.member || !newState.channel) return;
 
+    const member = newState.member;
+    const channel = newState.channel;
     const userConfig = await getUserConfig(member.id);
     const url = userConfig?.doorbell as string | undefined;
-    const channel = newState.channel!;
 
     if (!url) return;
 
