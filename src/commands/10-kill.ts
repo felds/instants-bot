@@ -1,6 +1,7 @@
 import { Message } from "discord.js";
 import { Embed } from "../message";
 import { Queue } from "../queue";
+import { Command } from "../types";
 
 export const command: Command = {
   aliases: ["-k", "-stop", "-kill"],

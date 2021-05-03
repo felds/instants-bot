@@ -5,6 +5,7 @@ import { logger } from "../logging";
 import { createSearchResultsEmbed, REACTION_ICONS } from "../message";
 import { Instant } from "../model/Instant";
 import { Queue } from "../queue";
+import { Command } from "../types";
 import { searchGifs } from "../util/tenor";
 
 export const command: Command = {

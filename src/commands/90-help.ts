@@ -2,6 +2,7 @@ import { Message } from "discord.js";
 import { join } from "path";
 import config from "../config";
 import { Embed } from "../message";
+import { Command } from "../types";
 import { importDir } from "../util";
 
 const commands: Promise<Command[]> = importDir<{ command: Command }>(

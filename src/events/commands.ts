@@ -3,6 +3,7 @@ import { Message } from "discord.js";
 import { join } from "path";
 import config from "../config";
 import { client } from "../discord";
+import { logger } from "../logging";
 import { getQueue, Queue } from "../queue";
 import { importDir } from "../util";
 
@@ -15,7 +16,12 @@ export type Command = {
 // import individual commands
 const commands: Promise<Command[]> = importDir<{ command: Command }>(
   join(__dirname, "../commands/"),
-).then((modules) => modules.map((module) => module.command));
+)
+  .then((modules) => modules.map((module) => module.command))
+  .catch((err) => {
+    logger.fatal("Couldn't load command.", { err });
+    process.exit(1);
+  });
 
 client.on("message", async (message) => {
   if (message.author.bot) return;
