@@ -45,6 +45,10 @@ export async function createCommandRunner(
   };
 }
 
-export function commandRespondsTo(command: Command, args: string[]): boolean {
-  return command.aliases.length > 0 && command.aliases.includes(args[0]);
+export function commandRespondsTo(command: Command, args?: string[]): boolean {
+  return (
+    command.aliases.length > 0 &&
+    args !== undefined &&
+    command.aliases.includes(args[0])
+  );
 }

@@ -11,6 +11,9 @@ const commandRunner = createCommandRunner(
 );
 
 client.on("message", async (message) => {
+  // it's a DM. ignore.
+  if (message.channel.type === "dm") return;
+
   // message from another bot. ignore.
   if (message.author.bot) return;
 
