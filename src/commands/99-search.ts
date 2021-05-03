@@ -11,7 +11,7 @@ import { searchGifs } from "../util/tenor";
 export const command: Command = {
   aliases: [],
   description: "Busca as parada",
-  async process(message: Message, queue: Queue, ...args: string[]) {
+  async process(message: Message, queue: Queue, args: string[]) {
     const terms = args.join(" ");
 
     const myLogger = logger.child({
