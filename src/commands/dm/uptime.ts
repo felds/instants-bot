@@ -1,6 +1,6 @@
 import { Command } from "../../util/command";
 
-export const UpdtimeCommand: Command = {
+export const command: Command = {
   name: "uptime",
   aliases: ["-uptime"],
   description: "Quando foi que esse servidor subiu?",
