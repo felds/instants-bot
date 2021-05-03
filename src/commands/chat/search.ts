@@ -8,11 +8,16 @@ import { Queue } from "../../queue";
 import { Command } from "../../util/command";
 import { searchGifs } from "../../util/tenor";
 
-export const command: Command = {
+export const command: Command<{ queue: Queue }> = {
   name: "search",
   aliases: [],
   description: "Busca as parada",
-  async process(message: Message, queue: Queue, args: string[]) {
+  process: async (
+    args: string[],
+    message: Message,
+    allCommands: Command[],
+    { queue },
+  ): Promise<void> => {
     const terms = args.join(" ");
 
     const myLogger = logger.child({

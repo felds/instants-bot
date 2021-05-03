@@ -2,7 +2,6 @@ import { Message } from "discord.js";
 import { format } from "util";
 import { listInstants } from "../../connector";
 import { createSearchResultsEmbed, REACTION_ICONS } from "../../message";
-import { Queue } from "../../queue";
 import { Command } from "../../util/command";
 import { setUserConfig } from "../../util/firebase";
 
@@ -10,7 +9,11 @@ export const command: Command = {
   name: "search",
   aliases: [],
   description: "Busca as parada",
-  async process(message: Message, queue: Queue, args: string[]) {
+  process: async (
+    args: string[],
+    message: Message,
+    allCommands: Command[],
+  ): Promise<void> => {
     const terms = args.join(" ");
     const results = await listInstants(terms, REACTION_ICONS.length);
 

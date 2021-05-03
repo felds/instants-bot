@@ -5,15 +5,15 @@ import { Embed } from "../../message";
 import { Queue } from "../../queue";
 import { Command } from "../../util/command";
 
-export const command: Command = {
+export const command: Command<{ queue: Queue }> = {
   name: "help",
   aliases: ["-h", "-help"],
   description: "Esse troço aqui",
   process: async (
-    message: Message,
-    queue: Queue,
     args: string[],
-    allCommands?: Command[],
+    message: Message,
+    allCommands: Command[],
+    { queue },
   ): Promise<void> => {
     assert(allCommands, "How help if no commands?");
 

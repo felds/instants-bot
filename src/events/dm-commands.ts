@@ -16,11 +16,9 @@ client.on("message", async (message) => {
 
   const cleanContent = message.cleanContent;
   const args = cleanContent.split(/\s+/);
-
-  // handling commands
   try {
-    // @ts-ignore
-    await commandRunner.then((process) => process(message, undefined, args));
+    const process = await commandRunner;
+    await process(args, message);
   } catch (err) {
     message.reply(err.message);
   }

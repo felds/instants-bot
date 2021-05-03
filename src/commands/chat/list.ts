@@ -5,11 +5,16 @@ import { Command } from "../../util/command";
 
 const MAX_ROWS = 10;
 
-export const command: Command = {
+export const command: Command<{ queue: Queue }> = {
   name: "list",
   aliases: ["-l", "-list", "-ls"],
   description: "Lista as pedradas",
-  async process(message: Message, queue: Queue): Promise<void> {
+  process: async (
+    args: string[],
+    message: Message,
+    allCommands: Command[],
+    { queue },
+  ): Promise<void> => {
     if (!queue.items.length) {
       await message.channel.send(
         new Embed({ description: "Tem nada aqui não" }),

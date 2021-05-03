@@ -2,10 +2,10 @@ import assert from "assert";
 import { join } from "path";
 import config from "../config";
 import { client } from "../discord";
-import { getQueue } from "../queue";
+import { getQueue, Queue } from "../queue";
 import { createCommandRunner } from "../util/command";
 
-const commandRunner = createCommandRunner(
+const commandRunner = createCommandRunner<{ queue: Queue }>(
   join(__dirname, "../commands/chat"),
   "search",
 );
@@ -29,7 +29,8 @@ client.on("message", async (message) => {
 
   const queue = getQueue(guild);
   try {
-    await commandRunner.then((process) => process(message, queue, args));
+    const process = await commandRunner;
+    await process(args, message, { queue });
   } catch (err) {
     message.reply(err.message);
   }

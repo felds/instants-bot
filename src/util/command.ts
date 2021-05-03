@@ -1,26 +1,31 @@
 import { Message } from "discord.js";
 import { logger } from "../logging";
-import { Queue } from "../queue";
 import { importDir } from "./fs";
 
-export type ProcessCommandCallback = (
-  message: Message,
-  queue: Queue,
+export type ProcessCommandCallback<T = undefined> = (
   args: string[],
-  allCommands?: Command[],
+  message: Message,
+  allCommands: Command[],
+  options: T,
 ) => Promise<void>;
 
-export type Command = {
+export type Command<T = unknown> = {
   name: string;
   aliases: string[];
   description: string;
-  process: ProcessCommandCallback;
+  process: ProcessCommandCallback<T>;
 };
 
-export async function createCommandRunner(
+export type Processor<T> = (
+  args: string[],
+  message: Message,
+  options?: T,
+) => Promise<void>;
+
+export async function createCommandRunner<T = unknown>(
   folder: string,
   defaultCommandName: string,
-): Promise<ProcessCommandCallback> {
+): Promise<Processor<T>> {
   const commands: Command[] = await importDir<{ command: Command }>(folder)
     .then((modules) => modules.map((module) => module.command))
     .catch((err) => {
@@ -28,11 +33,11 @@ export async function createCommandRunner(
       process.exit(1);
     });
 
-  return async (message: Message, queue: Queue, args: string[]) => {
+  return async (args: string[], message: Message, options?: T) => {
     // try every handle
     for (const command of commands) {
       if (commandRespondsTo(command, args)) {
-        return await command.process(message, queue, args, commands);
+        return await command.process(args, message, commands, options);
       }
     }
 
@@ -40,7 +45,7 @@ export async function createCommandRunner(
     const defaultCommand =
       defaultCommandName && commands.find((c) => c.name === defaultCommandName);
     if (defaultCommand) {
-      return await defaultCommand.process(message, queue, args, commands);
+      return await defaultCommand.process(args, message, commands, options);
     }
   };
 }
