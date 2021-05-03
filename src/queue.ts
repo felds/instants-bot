@@ -6,7 +6,7 @@ import { Instant } from "./model/Instant";
 const queues = new WeakMap<Guild, Queue>();
 
 export class Queue {
-  private isPlaying: boolean = false;
+  private isPlaying = false;
   private dispatcher: StreamDispatcher | null = null;
   readonly items: Instant[] = [];
 

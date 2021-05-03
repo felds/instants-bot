@@ -6,7 +6,7 @@ const BASE_URL = "https://www.myinstants.com";
 
 export async function listInstants(
   search?: string,
-  maxResults: number = 5,
+  maxResults = 5,
 ): Promise<Instant[]> {
   const url = search ? getSearchUrl(search) : getHomeUrl();
 
