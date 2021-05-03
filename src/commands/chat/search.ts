@@ -1,12 +1,12 @@
 import { Message } from "discord.js";
-import { listInstants } from "../connector";
-import { getVoiceChannel } from "../discord";
-import { logger } from "../logging";
-import { createSearchResultsEmbed, REACTION_ICONS } from "../message";
-import { Instant } from "../model/Instant";
-import { Queue } from "../queue";
-import { Command } from "../util/command";
-import { searchGifs } from "../util/tenor";
+import { listInstants } from "../../connector";
+import { getVoiceChannel } from "../../discord";
+import { logger } from "../../logging";
+import { createSearchResultsEmbed, REACTION_ICONS } from "../../message";
+import { Instant } from "../../model/Instant";
+import { Queue } from "../../queue";
+import { Command } from "../../util/command";
+import { searchGifs } from "../../util/tenor";
 
 export const command: Command = {
   name: "search",

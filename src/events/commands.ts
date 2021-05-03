@@ -6,7 +6,7 @@ import { getQueue } from "../queue";
 import { createCommandRunner } from "../util/command";
 
 const commandRunner = createCommandRunner(
-  join(__dirname, "../commands"),
+  join(__dirname, "../commands/chat"),
   "search",
 );
 

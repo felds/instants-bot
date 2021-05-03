@@ -1,6 +1,6 @@
 import { Message } from "discord.js";
-import { Queue } from "../queue";
-import { Command } from "../util/command";
+import { Queue } from "../../queue";
+import { Command } from "../../util/command";
 
 export const command: Command = {
   name: "skip",

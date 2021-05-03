@@ -1,7 +1,7 @@
 import { Message } from "discord.js";
-import { Embed } from "../message";
-import { Queue } from "../queue";
-import { Command } from "../util/command";
+import { Embed } from "../../message";
+import { Queue } from "../../queue";
+import { Command } from "../../util/command";
 
 const MAX_ROWS = 10;
 

@@ -1,7 +1,7 @@
 import { Message } from "discord.js";
-import { Embed } from "../message";
-import { Queue } from "../queue";
-import { Command } from "../util/command";
+import { Embed } from "../../message";
+import { Queue } from "../../queue";
+import { Command } from "../../util/command";
 
 export const command: Command = {
   name: "kill",
