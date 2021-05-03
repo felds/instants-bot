@@ -3,4 +3,5 @@ export default {
   TOKEN: process.env.TOKEN,
   DEBUG: process.env.DEBUG ?? false,
   TENOR_KEY: process.env.TENOR_KEY,
+  ENV: process.env.ENV as string | undefined | "gcp",
 };

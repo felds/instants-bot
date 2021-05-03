@@ -36,7 +36,7 @@ client.on("message", async (message) => {
     for (const command of await commands) {
       if (command.aliases.length && !command.aliases.includes(args[0]))
         continue;
-      await command.process(message, queue, ...args);
+      return command.process(message, queue, ...args);
     }
   } catch (err) {
     message.reply(err.message);

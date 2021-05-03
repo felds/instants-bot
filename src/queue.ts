@@ -1,9 +1,5 @@
-import {
-  Guild,
-  StreamDispatcher,
-  VoiceChannel,
-  VoiceConnection,
-} from "discord.js";
+import { Guild, StreamDispatcher, VoiceChannel } from "discord.js";
+import { connectToVoiceChannel } from "./discord";
 import { logger } from "./logging";
 import { Instant } from "./model/Instant";
 
@@ -55,7 +51,7 @@ export class Queue {
     const next = this.items[0];
     if (!next) return;
 
-    const connection = await this.connect(next.voiceChannel);
+    const connection = await connectToVoiceChannel(next.voiceChannel.id);
     await new Promise<void>((resolve, reject) => {
       const dispatcher = connection.play(next.url);
 
@@ -79,13 +75,6 @@ export class Queue {
 
       this.dispatcher = dispatcher;
     });
-  }
-
-  private async connect(voiceChannel: VoiceChannel): Promise<VoiceConnection> {
-    if (!voiceChannel.joinable) {
-      throw new QueueException("Channel is not joinable.", voiceChannel);
-    }
-    return voiceChannel.join();
   }
 }
 
