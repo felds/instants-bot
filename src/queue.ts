@@ -12,7 +12,7 @@ export class Queue {
 
   constructor(private guild: Guild) {}
 
-  public async play(item: Instant) {
+  public async play(item: Instant): Promise<void> {
     this.items.push(item);
 
     if (!this.isPlaying) {
@@ -31,12 +31,12 @@ export class Queue {
     }
   }
 
-  public skip() {
+  public skip(): void {
     logger.debug("Item skipped by the user.");
     this.dispatcher?.end();
   }
 
-  public kill() {
+  public kill(): void {
     logger.debug("Queue cleared.");
     this.items.splice(0);
     this.dispatcher?.end();
@@ -79,11 +79,12 @@ export class Queue {
 }
 
 export function getQueue(guild: Guild): Queue {
-  if (queues.has(guild)) return queues.get(guild)!;
+  const existingQueue = queues.get(guild);
+  if (existingQueue !== undefined) return existingQueue;
 
-  const queue = new Queue(guild);
-  queues.set(guild, queue);
-  return queue;
+  const newQueue = new Queue(guild);
+  queues.set(guild, newQueue);
+  return newQueue;
 }
 
 export class QueueException extends Error {

@@ -15,7 +15,7 @@ export async function getUserConfig(userId: Snowflake): Promise<UserConfig> {
 
 export async function setUserConfig(
   userId: Snowflake,
-  config: object,
+  config: Record<string, unknown>,
 ): Promise<UserConfig> {
   const docId = `UserConfig/${userId}`;
   await fs.doc(docId).set(config, { merge: true });

@@ -22,7 +22,7 @@ export async function createSearchResultsEmbed(
   const sentMessage = await msg.channel.send(embed);
 
   for (const r of REACTION_ICONS.slice(0, results.length)) {
-    sentMessage.react(r).catch(() => {});
+    sentMessage.react(r).catch(() => undefined);
   }
 
   const filter = (reaction: MessageReaction, user: ClientUser) =>
@@ -30,7 +30,7 @@ export async function createSearchResultsEmbed(
 
   const collector = sentMessage.createReactionCollector(filter);
   collector.on("collect", (r) => {
-    const emoji = r.emoji.name!;
+    const emoji = r.emoji.name;
     const i = REACTION_ICONS.indexOf(emoji);
     if (i >= 0) onReact?.(i);
   });

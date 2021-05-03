@@ -9,11 +9,7 @@ export const command: Command = {
 
   description: "Lista as pedradas",
 
-  async process(
-    message: Message,
-    queue: Queue,
-    ...args: string[]
-  ): Promise<void> {
+  async process(message: Message, queue: Queue): Promise<void> {
     if (!queue.items.length) {
       await message.channel.send(
         new Embed({ description: "Tem nada aqui não" }),

@@ -2,7 +2,6 @@ import { Message } from "discord.js";
 import { join } from "path";
 import config from "../config";
 import { Embed } from "../message";
-import { Queue } from "../queue";
 import { importDir } from "../util";
 
 const commands: Promise<Command[]> = importDir<{ command: Command }>(
@@ -12,11 +11,7 @@ const commands: Promise<Command[]> = importDir<{ command: Command }>(
 export const command: Command = {
   aliases: ["-h", "-help"],
   description: "Esse troço aqui",
-  async process(
-    message: Message,
-    queue: Queue,
-    ...args: string[]
-  ): Promise<void> {
+  async process(message: Message): Promise<void> {
     const helpText = (await commands)
       .map((cmd) => {
         const xs = [config.PREFIX, cmd.aliases.join("|")].filter((x) => x);

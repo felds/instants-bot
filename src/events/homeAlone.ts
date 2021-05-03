@@ -6,8 +6,8 @@ import { client } from "../discord";
 import { logger } from "../logging";
 
 client.on("voiceStateUpdate", (oldState: VoiceState, newState: VoiceState) => {
-  const voiceChannel = oldState.channel;
-  if (!voiceChannel) return;
+  const leavingChannel = oldState.channel;
+  if (!leavingChannel) return;
 
   // state change doesn't have a member or it's a bot
   const member = oldState.member;
@@ -17,14 +17,14 @@ client.on("voiceStateUpdate", (oldState: VoiceState, newState: VoiceState) => {
   if (oldState.channelID === newState.channelID) return;
 
   const connection = client.voice?.connections.find((c) =>
-    c.channel.equals(oldState.channel!),
+    c.channel.equals(leavingChannel),
   );
   if (!connection) return;
 
-  const members = oldState.channel?.members!;
+  const members = leavingChannel.members;
   if (members.every((m) => m.user.bot)) {
     logger.info(
-      { guild: voiceChannel.guild.name, channel: oldState.channel?.name },
+      { guild: leavingChannel.guild.name, channel: oldState.channel?.name },
       "I was left alone in the channel. Disconnecting.",
     );
     connection.disconnect();
