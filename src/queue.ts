@@ -19,7 +19,6 @@ export class Queue {
       this.isPlaying = true;
       while (this.items.length) {
         try {
-          item.onStart?.();
           await this.playForRealsies();
         } catch (err) {
           this.kill();
@@ -50,6 +49,8 @@ export class Queue {
   private async playForRealsies(): Promise<void> {
     const next = this.items[0];
     if (!next) return;
+
+    next.onStart?.();
 
     const connection = await connectToVoiceChannel(next.voiceChannel.id);
     await new Promise<void>((resolve, reject) => {
