@@ -5,10 +5,11 @@ import { logger } from "../logging";
 import { createSearchResultsEmbed, REACTION_ICONS } from "../message";
 import { Instant } from "../model/Instant";
 import { Queue } from "../queue";
-import { Command } from "../types";
+import { Command } from "../util/command";
 import { searchGifs } from "../util/tenor";
 
 export const command: Command = {
+  name: "search",
   aliases: [],
   description: "Busca as parada",
   async process(message: Message, queue: Queue, args: string[]) {

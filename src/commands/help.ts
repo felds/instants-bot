@@ -2,14 +2,15 @@ import { Message } from "discord.js";
 import { join } from "path";
 import config from "../config";
 import { Embed } from "../message";
-import { Command } from "../types";
-import { importDir } from "../util";
+import { Command } from "../util/command";
+import { importDir } from "../util/fs";
 
 const commands: Promise<Command[]> = importDir<{ command: Command }>(
   join(__dirname, "../commands"),
 ).then((modules) => modules.map((module) => module.command));
 
 export const command: Command = {
+  name: "help",
   aliases: ["-h", "-help"],
   description: "Esse troço aqui",
   async process(message: Message): Promise<void> {

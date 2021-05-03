@@ -1,15 +1,14 @@
 import { Message } from "discord.js";
 import { Embed } from "../message";
 import { Queue } from "../queue";
-import { Command } from "../types";
+import { Command } from "../util/command";
 
 const MAX_ROWS = 10;
 
 export const command: Command = {
+  name: "list",
   aliases: ["-l", "-list", "-ls"],
-
   description: "Lista as pedradas",
-
   async process(message: Message, queue: Queue): Promise<void> {
     if (!queue.items.length) {
       await message.channel.send(

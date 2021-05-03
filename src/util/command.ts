@@ -1,4 +1,5 @@
 import { Message } from "discord.js";
+import { logger } from "../logging";
 import { Queue } from "../queue";
 import { importDir } from "./fs";
 
@@ -23,8 +24,7 @@ export async function createCommandRunner(
   const commands: Command[] = await importDir<{ command: Command }>(folder)
     .then((modules) => modules.map((module) => module.command))
     .catch((err) => {
-      // logger.fatal("Couldn't load command.", { err });
-      console.error("Couldn't load command ", err);
+      logger.fatal("Couldn't load command.", { err });
       process.exit(1);
     });
 
