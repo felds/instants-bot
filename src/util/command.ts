@@ -37,7 +37,7 @@ export async function createCommandRunner<T = unknown>(
     // try every handle
     for (const command of commands) {
       if (commandRespondsTo(command, args)) {
-        return await command.process(args, message, commands, options);
+        return await command.process(args.slice(1), message, commands, options);
       }
     }
 

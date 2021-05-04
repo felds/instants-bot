@@ -1,3 +1,4 @@
+import assert from "assert";
 import { Message } from "discord.js";
 import { listInstants } from "../../connector";
 import { getVoiceChannel } from "../../discord";
@@ -6,6 +7,7 @@ import { createSearchResultsEmbed, REACTION_ICONS } from "../../message";
 import { Instant } from "../../model/Instant";
 import { Queue } from "../../queue";
 import { Command } from "../../util/command";
+import { getGuildConfig } from "../../util/firebase";
 import { searchGifs } from "../../util/tenor";
 
 export const command: Command<{ queue: Queue }> = {
@@ -20,19 +22,25 @@ export const command: Command<{ queue: Queue }> = {
   ): Promise<void> => {
     const terms = args.join(" ");
 
+    const guild = message.guild;
+    assert(guild, "Você não está em um servidor.");
+
+    const user = message.author;
+    const voiceChannel = getVoiceChannel(message);
+
     const myLogger = logger.child({
-      guild: message.member?.guild.name,
-      channel: message.member?.voice.channel?.name,
-      user: message.author.tag,
+      guild: guild.name,
+      channel: voiceChannel.name,
+      user: user.tag,
       terms,
     });
 
-    const voiceChannel = getVoiceChannel(message);
+    const { maxgifs } = await getGuildConfig(guild.id);
 
     myLogger.trace("User made a new search.");
     const [results, gifs] = await Promise.all([
       listInstants(terms, REACTION_ICONS.length),
-      terms.length ? searchGifs(terms, 50) : [],
+      terms.length ? searchGifs(terms, Number(maxgifs)) : [],
     ]);
 
     if (results.length < 1) {
