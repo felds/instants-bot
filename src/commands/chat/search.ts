@@ -35,7 +35,7 @@ export const command: Command<{ queue: Queue }> = {
       terms,
     });
 
-    const { maxgifs } = await getGuildConfig(guild.id);
+    const { maxgifs = 10 } = await getGuildConfig(guild.id);
 
     myLogger.trace("User made a new search.");
     const [results, gifs] = await Promise.all([
