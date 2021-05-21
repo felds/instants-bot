@@ -21,10 +21,7 @@ function shuffled<T>(xs: T[]): T[] {
   return copy;
 }
 
-export async function searchGifs(
-  q: string,
-  limit = 10,
-): Promise<Gif[]> {
+export async function searchGifs(q: string, limit = 10): Promise<Gif[]> {
   assert(q !== "", `search terms (q) should be a non-empty string.`);
   assert(
     limit > 0 && Number.isInteger(limit),
