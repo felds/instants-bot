@@ -8,7 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rm -fr dist && tsc",
     "start": "node dist/index.js",
-    "dev": "nodemon -r dotenv/config index.ts | bunyan",
+    "dev": "nodemon index.ts | bunyan",
     "lint": "eslint \"./**/*.{ts,js}\""
   },
   "keywords": [],
