@@ -20,6 +20,7 @@ client.on("message", async (message) => {
     const process = await commandRunner;
     await process(args, message);
   } catch (err) {
-    message.reply(err.message);
+    const msg = err instanceof Error ? err.message : String(err);
+    message.reply(msg);
   }
 });
