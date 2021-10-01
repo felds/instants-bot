@@ -23,8 +23,7 @@
     "firebase": "^8.4.1",
     "firebase-admin": "^9.6.0",
     "node-fetch": "^2.6.1",
-    "opusscript": "0.0.8",
-    "ts-node": "^10.2.1"
+    "opusscript": "0.0.8"
   },
   "devDependencies": {
     "@types/bunyan": "^1.8.6",
@@ -36,6 +35,7 @@
     "eslint": "^7.25.0",
     "eslint-config-prettier": "^8.3.0",
     "nodemon": "^2.0.4",
+    "ts-node": "^10.2.1",
     "typescript": "^4.4.3"
   }
 }
