@@ -15,7 +15,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@discordjs/opus": "^0.3.2",
+    "@discordjs/opus": "^0.8.0",
     "@google-cloud/logging-bunyan": "^3.0.2",
     "bunyan": "^1.8.14",
     "cheerio": "^1.0.0-rc.3",
